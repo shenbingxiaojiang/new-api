@@ -12,6 +12,7 @@ import (
 	"one-api/relay/channel/openai"
 	"one-api/relay/channel/palm"
 	"one-api/relay/channel/perplexity"
+	"one-api/relay/channel/scholarai"
 	"one-api/relay/channel/tencent"
 	"one-api/relay/channel/xunfei"
 	"one-api/relay/channel/zhipu"
@@ -51,6 +52,8 @@ func GetAdaptor(apiType int) channel.Adaptor {
 		return &aws.Adaptor{}
 	case constant.APITypeCohere:
 		return &cohere.Adaptor{}
+	case constant.APITypeScholarAI:
+		return &scholarai.Adaptor{}
 	}
 	return nil
 }

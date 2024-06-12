@@ -231,6 +231,7 @@ const (
 	ChannelTypeAws            = 33
 	ChannelTypeCohere         = 34
 	ChannelTypeMiniMax        = 35
+	ChannelTypeScholarAI      = 36
 
 	ChannelTypeDummy // this one is only for count, do not add any channel after this
 )
@@ -272,4 +273,5 @@ var ChannelBaseURLs = []string{
 	"",                                          //33
 	"https://api.cohere.ai",                     //34
 	"https://api.minimax.chat",                  //35
+	"https://api.scholarai.io",                  //36
 }
