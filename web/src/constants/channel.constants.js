@@ -98,6 +98,7 @@ export const CHANNEL_OPTIONS = [
   { key: 31, text: '零一万物', value: 31, color: 'green', label: '零一万物' },
   { key: 35, text: 'MiniMax', value: 35, color: 'green', label: 'MiniMax' },
   { key: 36, text: 'ScholarAI', value: 36, color: 'green', label: 'ScholarAI' },
+  { key: 37, text: '豆包', value: 37, color: 'green', label: '豆包' },
   { key: 8, text: '自定义渠道', value: 8, color: 'pink', label: '自定义渠道' },
   {
     key: 22,

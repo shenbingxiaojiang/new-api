@@ -3,19 +3,21 @@ package openai
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"one-api/common"
 	"one-api/dto"
 	"one-api/relay/channel"
 	"one-api/relay/channel/ai360"
+	"one-api/relay/channel/doubao"
 	"one-api/relay/channel/lingyiwanwu"
 	"one-api/relay/channel/minimax"
 	"one-api/relay/channel/moonshot"
 	relaycommon "one-api/relay/common"
 	"one-api/service"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Adaptor struct {
@@ -41,6 +43,8 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 		return relaycommon.GetFullRequestURL(info.BaseUrl, requestURL, info.ChannelType), nil
 	case common.ChannelTypeMiniMax:
 		return minimax.GetRequestURL(info)
+	case common.ChannelTypeDoubao:
+		return doubao.GetRequestURL(info)
 	case common.ChannelTypeCustom:
 		url := info.BaseUrl
 		url = strings.Replace(url, "{model}", info.UpstreamModelName, -1)
@@ -101,6 +105,8 @@ func (a *Adaptor) GetModelList() []string {
 		return lingyiwanwu.ModelList
 	case common.ChannelTypeMiniMax:
 		return minimax.ModelList
+	case common.ChannelTypeDoubao:
+		return doubao.ModelList
 	default:
 		return ModelList
 	}
@@ -116,6 +122,8 @@ func (a *Adaptor) GetChannelName() string {
 		return lingyiwanwu.ChannelName
 	case common.ChannelTypeMiniMax:
 		return minimax.ChannelName
+	case common.ChannelTypeDoubao:
+		return doubao.ChannelName
 	default:
 		return ChannelName
 	}
