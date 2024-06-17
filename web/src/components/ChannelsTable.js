@@ -48,6 +48,13 @@ function renderType(type) {
     }
     type2label[0] = { value: 0, text: '未知类型', color: 'grey' };
   }
+  const backgroundColor = type2label[type]?.backgroundColor
+  const textColor = type2label[type]?.textColor
+  if (backgroundColor && textColor) {
+    return <Tag size='large' style={{backgroundColor: backgroundColor, color: textColor}}>
+      {type2label[type]?.text}
+    </Tag>
+  }
   return (
     <Tag size='large' color={type2label[type]?.color}>
       {type2label[type]?.text}
