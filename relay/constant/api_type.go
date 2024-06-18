@@ -21,6 +21,7 @@ const (
 	APITypeAws
 	APITypeCohere
 	APITypeScholarAI
+	APITypeVertexClaude
 	APITypeDummy // this one is only for count, do not add any channel after this
 )
 
@@ -59,6 +60,8 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = APITypeCohere
 	case common.ChannelTypeScholarAI:
 		apiType = APITypeScholarAI
+	case common.ChannelTypeVertexClaude:
+		apiType = APITypeVertexClaude
 	}
 	if apiType == -1 {
 		return APITypeOpenAI, false

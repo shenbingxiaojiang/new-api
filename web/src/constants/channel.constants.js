@@ -112,6 +112,13 @@ export const CHANNEL_OPTIONS = [
     color: 'blue',
     label: '豆包'
   },
+  {
+    key: 38,
+    text: 'Vertex Claude',
+    value: 38,
+    color: 'blue',
+    label: 'Vertex Claude'
+  },
   { key: 8, text: '自定义渠道', value: 8, color: 'pink', label: '自定义渠道' },
   {
     key: 22,

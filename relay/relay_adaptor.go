@@ -14,6 +14,7 @@ import (
 	"one-api/relay/channel/perplexity"
 	"one-api/relay/channel/scholarai"
 	"one-api/relay/channel/tencent"
+	vertex_claude "one-api/relay/channel/vertex-claude"
 	"one-api/relay/channel/xunfei"
 	"one-api/relay/channel/zhipu"
 	"one-api/relay/channel/zhipu_4v"
@@ -54,6 +55,8 @@ func GetAdaptor(apiType int) channel.Adaptor {
 		return &cohere.Adaptor{}
 	case constant.APITypeScholarAI:
 		return &scholarai.Adaptor{}
+	case constant.APITypeVertexClaude:
+		return &vertex_claude.Adaptor{}
 	}
 	return nil
 }
