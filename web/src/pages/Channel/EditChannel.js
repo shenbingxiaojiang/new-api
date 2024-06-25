@@ -127,6 +127,9 @@ const EditChannel = (props) => {
             'mj_uploads',
           ];
           break;
+        case 36:
+          localModels = ['suno_music', 'suno_lyrics'];
+          break;
         default:
           localModels = getChannelModels(value);
           break;
@@ -512,6 +515,26 @@ const EditChannel = (props) => {
               />
             </>
           )}
+          {inputs.type === 36 && (
+            <>
+              <div style={{ marginTop: 10 }}>
+                <Typography.Text strong>
+                  注意非Chat API，请务必填写正确的API地址，否则可能导致无法使用
+                </Typography.Text>
+              </div>
+              <Input
+                name='base_url'
+                placeholder={
+                  '请输入到 /suno 前的路径，通常就是域名，例如：https://api.example.com '
+                }
+                onChange={(value) => {
+                  handleInputChange('base_url', value);
+                }}
+                value={inputs.base_url}
+                autoComplete='new-password'
+              />
+            </>
+          )}
           <div style={{ marginTop: 10 }}>
             <Typography.Text strong>名称：</Typography.Text>
           </div>
@@ -757,23 +780,26 @@ const EditChannel = (props) => {
               </Space>
             </div>
           )}
-          {inputs.type !== 3 && inputs.type !== 8 && inputs.type !== 22 && (
-            <>
-              <div style={{ marginTop: 10 }}>
-                <Typography.Text strong>代理：</Typography.Text>
-              </div>
-              <Input
-                label='代理'
-                name='base_url'
-                placeholder={'此项可选，用于通过代理站来进行 API 调用'}
-                onChange={(value) => {
-                  handleInputChange('base_url', value);
-                }}
-                value={inputs.base_url}
-                autoComplete='new-password'
-              />
-            </>
-          )}
+          {inputs.type !== 3 &&
+            inputs.type !== 8 &&
+            inputs.type !== 22 &&
+            inputs.type !== 36 && (
+              <>
+                <div style={{ marginTop: 10 }}>
+                  <Typography.Text strong>代理：</Typography.Text>
+                </div>
+                <Input
+                  label='代理'
+                  name='base_url'
+                  placeholder={'此项可选，用于通过代理站来进行 API 调用'}
+                  onChange={(value) => {
+                    handleInputChange('base_url', value);
+                  }}
+                  value={inputs.base_url}
+                  autoComplete='new-password'
+                />
+              </>
+            )}
           {inputs.type === 22 && (
             <>
               <div style={{ marginTop: 10 }}>

@@ -32,6 +32,7 @@ var QuotaPerUnit = 500 * 1000.0 // $0.002 / 1K tokens
 var DisplayInCurrencyEnabled = true
 var DisplayTokenStatEnabled = true
 var DrawingEnabled = true
+var TaskEnabled = true
 var DataExportEnabled = true
 var DataExportInterval = 5         // unit: minute
 var DataExportDefaultTime = "hour" // unit: minute
@@ -231,11 +232,14 @@ const (
 	ChannelTypeAws            = 33
 	ChannelTypeCohere         = 34
 	ChannelTypeMiniMax        = 35
-	ChannelTypeScholarAI      = 36
-	ChannelTypeDoubao         = 37
-	ChannelTypeVertexClaude   = 38
+	ChannelTypeSunoAPI        = 36
+
+	ChannelTypeScholarAI      = 37
+	ChannelTypeDoubao         = 38
+	ChannelTypeVertexClaude   = 39
 
 	ChannelTypeDummy // this one is only for count, do not add any channel after this
+
 )
 
 var ChannelBaseURLs = []string{
@@ -275,7 +279,8 @@ var ChannelBaseURLs = []string{
 	"",                                          //33
 	"https://api.cohere.ai",                     //34
 	"https://api.minimax.chat",                  //35
-	"https://api.scholarai.io",                  //36
-	"https://ark.cn-beijing.volces.com",         //37
-	"",                                          //38
+	"",                                          //36
+	"https://api.scholarai.io",                  //37
+	"https://ark.cn-beijing.volces.com",         //38
+	"",                                          //39
 }

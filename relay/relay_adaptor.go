@@ -1,6 +1,7 @@
 package relay
 
 import (
+	commonconstant "one-api/constant"
 	"one-api/relay/channel"
 	"one-api/relay/channel/ali"
 	"one-api/relay/channel/aws"
@@ -12,6 +13,7 @@ import (
 	"one-api/relay/channel/openai"
 	"one-api/relay/channel/palm"
 	"one-api/relay/channel/perplexity"
+	"one-api/relay/channel/task/suno"
 	"one-api/relay/channel/scholarai"
 	"one-api/relay/channel/tencent"
 	vertex_claude "one-api/relay/channel/vertex-claude"
@@ -57,6 +59,16 @@ func GetAdaptor(apiType int) channel.Adaptor {
 		return &scholarai.Adaptor{}
 	case constant.APITypeVertexClaude:
 		return &vertex_claude.Adaptor{}
+	}
+	return nil
+}
+
+func GetTaskAdaptor(platform commonconstant.TaskPlatform) channel.TaskAdaptor {
+	switch platform {
+	//case constant.APITypeAIProxyLibrary:
+	//	return &aiproxy.Adaptor{}
+	case commonconstant.TaskPlatformSuno:
+		return &suno.TaskAdaptor{}
 	}
 	return nil
 }
