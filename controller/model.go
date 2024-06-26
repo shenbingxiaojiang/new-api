@@ -124,15 +124,16 @@ func init() {
 		openAIModelsMap[aiModel.Id] = aiModel
 	}
 	channelId2Models = make(map[int][]string)
-	for i := 1; i <= len(common.ChannelList); i++ {
-		apiType, _ := relayconstant.ChannelType2APIType(i)
+	for i := 1; i < len(common.ChannelList); i++ {
+		channel := common.ChannelList[i]
+		apiType, _ := relayconstant.ChannelType2APIType(channel.Type)
 		if apiType == relayconstant.APITypeAIProxyLibrary {
 			continue
 		}
-		meta := &relaycommon.RelayInfo{ChannelType: i}
+		meta := &relaycommon.RelayInfo{ChannelType: channel.Type}
 		adaptor := relay.GetAdaptor(apiType)
 		adaptor.Init(meta, dto.GeneralOpenAIRequest{})
-		channelId2Models[i] = adaptor.GetModelList()
+		channelId2Models[channel.Type] = adaptor.GetModelList()
 	}
 }
 
