@@ -234,10 +234,6 @@ const (
 	ChannelTypeMiniMax        = 35
 	ChannelTypeSunoAPI        = 36
 
-	ChannelTypeScholarAI      = 37
-	ChannelTypeDoubao         = 38
-	ChannelTypeVertexClaude   = 39
-
 	ChannelTypeDummy // this one is only for count, do not add any channel after this
 
 )
@@ -280,7 +276,4 @@ var ChannelBaseURLs = []string{
 	"https://api.cohere.ai",                     //34
 	"https://api.minimax.chat",                  //35
 	"",                                          //36
-	"https://api.scholarai.io",                  //37
-	"https://ark.cn-beijing.volces.com",         //38
-	"",                                          //39
 }

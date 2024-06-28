@@ -201,26 +201,30 @@ func updateChannelAIGC2DBalance(channel *model.Channel) (float64, error) {
 }
 
 func updateChannelBalance(channel *model.Channel) (float64, error) {
-	baseURL := common.ChannelBaseURLs[channel.Type]
+	ch, exists := common.ChannelMap[channel.Type]
+	if !exists {
+		return 0, errors.New("channel not exists")
+	}
+	baseURL := ch.BaseUrl
 	if channel.GetBaseURL() == "" {
 		channel.BaseURL = &baseURL
 	}
 	switch channel.Type {
-	case common.ChannelTypeOpenAI:
+	case common.OpenAIChannel.Type:
 		if channel.GetBaseURL() != "" {
 			baseURL = channel.GetBaseURL()
 		}
-	case common.ChannelTypeAzure:
+	case common.AzureChannel.Type:
 		return 0, errors.New("尚未实现")
-	case common.ChannelTypeCustom:
+	case common.CustomChannel.Type:
 		baseURL = channel.GetBaseURL()
 	//case common.ChannelTypeOpenAISB:
 	//	return updateChannelOpenAISBBalance(channel)
-	case common.ChannelTypeAIProxy:
+	case common.AIProxyChannel.Type:
 		return updateChannelAIProxyBalance(channel)
-	case common.ChannelTypeAPI2GPT:
+	case common.API2GPTChannel.Type:
 		return updateChannelAPI2GPTBalance(channel)
-	case common.ChannelTypeAIGC2D:
+	case common.AIGC2DChannel.Type:
 		return updateChannelAIGC2DBalance(channel)
 	default:
 		return 0, errors.New("尚未实现")
@@ -300,7 +304,7 @@ func updateAllChannelsBalance() error {
 			continue
 		}
 		// TODO: support Azure
-		if channel.Type != common.ChannelTypeOpenAI && channel.Type != common.ChannelTypeCustom {
+		if channel.Type != common.OpenAIChannel.Type && channel.Type != common.CustomChannel.Type {
 			continue
 		}
 		balance, err := updateChannelBalance(channel)

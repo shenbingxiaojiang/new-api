@@ -24,10 +24,10 @@ import (
 )
 
 func testChannel(channel *model.Channel, testModel string) (err error, openaiErr *dto.OpenAIError) {
-	if channel.Type == common.ChannelTypeMidjourney {
+	if channel.Type == common.MidjourneyChannel.Type {
 		return errors.New("midjourney channel test is not supported"), nil
 	}
-	if channel.Type == common.ChannelTypeSunoAPI {
+	if channel.Type == common.SunoAPIChannel.Type {
 		return errors.New("suno channel test is not supported"), nil
 	}
 	w := httptest.NewRecorder()
@@ -43,19 +43,22 @@ func testChannel(channel *model.Channel, testModel string) (err error, openaiErr
 	c.Set("channel", channel.Type)
 	c.Set("base_url", channel.GetBaseURL())
 	switch channel.Type {
-	case common.ChannelTypeAzure:
+	case common.AzureChannel.Type:
 		c.Set("api_version", channel.Other)
-	case common.ChannelTypeXunfei:
+	case common.XunfeiChannel.Type:
 		c.Set("api_version", channel.Other)
 	//case common.ChannelTypeAIProxyLibrary:
 	//	c.Set("library_id", channel.Other)
-	case common.ChannelTypeGemini:
+	case common.GeminiChannel.Type:
 		c.Set("api_version", channel.Other)
-	case common.ChannelTypeAli:
+	case common.AliChannel.Type:
 		c.Set("plugin", channel.Other)
 	}
 
-	meta := relaycommon.GenRelayInfo(c)
+	meta, err := relaycommon.GenRelayInfo(c)
+	if err != nil {
+		return err, nil
+	}
 	apiType, _ := constant.ChannelType2APIType(channel.Type)
 	adaptor := relay.GetAdaptor(apiType)
 	// OpenAI 适配器需要 channelType

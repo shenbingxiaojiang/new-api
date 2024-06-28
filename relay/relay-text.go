@@ -66,7 +66,10 @@ func getAndValidateTextRequest(c *gin.Context, relayInfo *relaycommon.RelayInfo)
 
 func TextHelper(c *gin.Context) *dto.OpenAIErrorWithStatusCode {
 
-	relayInfo := relaycommon.GenRelayInfo(c)
+	relayInfo, err := relaycommon.GenRelayInfo(c)
+	if err != nil {
+		return service.OpenAIErrorWrapperLocal(err, "gen_relay_info_failed", http.StatusBadRequest)
+	}
 
 	// get & validate textRequest 获取并验证文本请求
 	textRequest, err := getAndValidateTextRequest(c, relayInfo)

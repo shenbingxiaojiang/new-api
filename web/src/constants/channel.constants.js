@@ -105,25 +105,26 @@ export const CHANNEL_OPTIONS = [
   { key: 31, text: '零一万物', value: 31, color: 'green', label: '零一万物' },
   { key: 35, text: 'MiniMax', value: 35, color: 'green', label: 'MiniMax' },
   {
-    key: 36,
+    key: 10001,
     text: 'ScholarAI',
-    value: 36,
+    value: 10001,
     backgroundColor: 'rgb(0, 70, 77)',
     textColor: 'white',
     label: 'ScholarAI'
   },
   {
-    key: 37,
+    key: 10002,
     text: '豆包',
-    value: 37,
+    value: 10002,
     color: 'blue',
     label: '豆包'
   },
   {
-    key: 38,
+    key: 10003,
     text: 'Vertex Claude',
-    value: 38,
-    color: 'blue',
+    value: 10003,
+    backgroundColor: 'rgb(203, 155, 122)',
+    textColor: 'black',
     label: 'Vertex Claude'
   },
   { key: 8, text: '自定义渠道', value: 8, color: 'pink', label: '自定义渠道' },

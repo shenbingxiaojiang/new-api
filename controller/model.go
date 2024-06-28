@@ -124,7 +124,7 @@ func init() {
 		openAIModelsMap[aiModel.Id] = aiModel
 	}
 	channelId2Models = make(map[int][]string)
-	for i := 1; i <= common.ChannelTypeDummy; i++ {
+	for i := 1; i <= len(common.ChannelList); i++ {
 		apiType, _ := relayconstant.ChannelType2APIType(i)
 		if apiType == relayconstant.APITypeAIProxyLibrary {
 			continue

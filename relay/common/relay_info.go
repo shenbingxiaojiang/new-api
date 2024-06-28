@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"one-api/common"
 	"one-api/relay/constant"
@@ -28,7 +29,7 @@ type RelayInfo struct {
 	BaseUrl           string
 }
 
-func GenRelayInfo(c *gin.Context) *RelayInfo {
+func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 	channelType := c.GetInt("channel")
 	channelId := c.GetInt("channel_id")
 
@@ -57,12 +58,16 @@ func GenRelayInfo(c *gin.Context) *RelayInfo {
 		Organization:   c.GetString("channel_organization"),
 	}
 	if info.BaseUrl == "" {
-		info.BaseUrl = common.ChannelBaseURLs[channelType]
+		ch, exists := common.ChannelMap[channelType]
+		if !exists {
+			return nil, errors.New("channel not exists")
+		}
+		info.BaseUrl = ch.BaseUrl
 	}
-	if info.ChannelType == common.ChannelTypeAzure {
+	if info.ChannelType == common.AzureChannel.Type {
 		info.ApiVersion = GetAPIVersion(c)
 	}
-	return info
+	return info, nil
 }
 
 func (info *RelayInfo) SetPromptTokens(promptTokens int) {
@@ -93,7 +98,7 @@ type TaskRelayInfo struct {
 	ConsumeQuota bool
 }
 
-func GenTaskRelayInfo(c *gin.Context) *TaskRelayInfo {
+func GenTaskRelayInfo(c *gin.Context) (*TaskRelayInfo, error) {
 	channelType := c.GetInt("channel")
 	channelId := c.GetInt("channel_id")
 
@@ -118,7 +123,11 @@ func GenTaskRelayInfo(c *gin.Context) *TaskRelayInfo {
 		ApiKey:         strings.TrimPrefix(c.Request.Header.Get("Authorization"), "Bearer "),
 	}
 	if info.BaseUrl == "" {
-		info.BaseUrl = common.ChannelBaseURLs[channelType]
+		ch, exists := common.ChannelMap[channelType]
+		if !exists {
+			return nil, errors.New("channel not exists")
+		}
+		info.BaseUrl = ch.BaseUrl
 	}
-	return info
+	return info, nil
 }

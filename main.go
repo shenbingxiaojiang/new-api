@@ -72,6 +72,9 @@ func main() {
 		go model.SyncChannelCache(common.SyncFrequency)
 	}
 
+	// Initialize channels
+	common.InitChannelMap()
+
 	// 数据看板
 	go model.UpdateQuotaData()
 

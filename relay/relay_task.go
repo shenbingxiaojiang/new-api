@@ -23,7 +23,11 @@ Task 任务通过平台、Action 区分任务
 */
 func RelayTaskSubmit(c *gin.Context, relayMode int) (taskErr *dto.TaskError) {
 	platform := constant.TaskPlatform(c.GetString("platform"))
-	relayInfo := relaycommon.GenTaskRelayInfo(c)
+	relayInfo, err := relaycommon.GenTaskRelayInfo(c)
+	if err != nil {
+		taskErr = service.TaskErrorWrapper(err, "get_relay_info_failed", http.StatusInternalServerError)
+		return
+	}
 
 	adaptor := GetTaskAdaptor(platform)
 	if adaptor == nil {

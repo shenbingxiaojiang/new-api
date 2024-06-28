@@ -49,9 +49,9 @@ func GetFullRequestURL(baseURL string, requestURL string, channelType int) strin
 
 	if strings.HasPrefix(baseURL, "https://gateway.ai.cloudflare.com") {
 		switch channelType {
-		case common.ChannelTypeOpenAI:
+		case common.OpenAIChannel.Type:
 			fullRequestURL = fmt.Sprintf("%s%s", baseURL, strings.TrimPrefix(requestURL, "/v1"))
-		case common.ChannelTypeAzure:
+		case common.AzureChannel.Type:
 			fullRequestURL = fmt.Sprintf("%s%s", baseURL, strings.TrimPrefix(requestURL, "/openai/deployments"))
 		}
 	}

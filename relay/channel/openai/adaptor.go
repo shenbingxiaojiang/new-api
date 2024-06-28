@@ -30,7 +30,7 @@ func (a *Adaptor) Init(info *relaycommon.RelayInfo, request dto.GeneralOpenAIReq
 
 func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 	switch info.ChannelType {
-	case common.ChannelTypeAzure:
+	case common.AzureChannel.Type:
 		// https://learn.microsoft.com/en-us/azure/cognitive-services/openai/chatgpt-quickstart?pivots=rest-api&tabs=command-line#rest-api
 		requestURL := strings.Split(info.RequestURLPath, "?")[0]
 		requestURL = fmt.Sprintf("%s?api-version=%s", requestURL, info.ApiVersion)
@@ -41,11 +41,11 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 
 		requestURL = fmt.Sprintf("/openai/deployments/%s/%s", model_, task)
 		return relaycommon.GetFullRequestURL(info.BaseUrl, requestURL, info.ChannelType), nil
-	case common.ChannelTypeMiniMax:
+	case common.MiniMaxChannel.Type:
 		return minimax.GetRequestURL(info)
-	case common.ChannelTypeDoubao:
+	case common.DoubaoChannel.Type:
 		return doubao.GetRequestURL(info)
-	case common.ChannelTypeCustom:
+	case common.CustomChannel.Type:
 		url := info.BaseUrl
 		url = strings.Replace(url, "{model}", info.UpstreamModelName, -1)
 		return url, nil
@@ -56,11 +56,11 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 
 func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Request, info *relaycommon.RelayInfo) error {
 	channel.SetupApiRequestHeader(info, c, req)
-	if info.ChannelType == common.ChannelTypeAzure {
+	if info.ChannelType == common.AzureChannel.Type {
 		req.Header.Set("api-key", info.ApiKey)
 		return nil
 	}
-	if info.ChannelType == common.ChannelTypeOpenAI && "" != info.Organization {
+	if info.ChannelType == common.OpenAIChannel.Type && "" != info.Organization {
 		req.Header.Set("OpenAI-Organization", info.Organization)
 	}
 	req.Header.Set("Authorization", "Bearer "+info.ApiKey)
@@ -97,15 +97,15 @@ func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycom
 
 func (a *Adaptor) GetModelList() []string {
 	switch a.ChannelType {
-	case common.ChannelType360:
+	case common.AI360Channel.Type:
 		return ai360.ModelList
-	case common.ChannelTypeMoonshot:
+	case common.MoonshotChannel.Type:
 		return moonshot.ModelList
-	case common.ChannelTypeLingYiWanWu:
+	case common.LingYiWanWuChannel.Type:
 		return lingyiwanwu.ModelList
-	case common.ChannelTypeMiniMax:
+	case common.MiniMaxChannel.Type:
 		return minimax.ModelList
-	case common.ChannelTypeDoubao:
+	case common.DoubaoChannel.Type:
 		return doubao.ModelList
 	default:
 		return ModelList
@@ -114,15 +114,15 @@ func (a *Adaptor) GetModelList() []string {
 
 func (a *Adaptor) GetChannelName() string {
 	switch a.ChannelType {
-	case common.ChannelType360:
+	case common.AI360Channel.Type:
 		return ai360.ChannelName
-	case common.ChannelTypeMoonshot:
+	case common.MoonshotChannel.Type:
 		return moonshot.ChannelName
-	case common.ChannelTypeLingYiWanWu:
+	case common.LingYiWanWuChannel.Type:
 		return lingyiwanwu.ChannelName
-	case common.ChannelTypeMiniMax:
+	case common.MiniMaxChannel.Type:
 		return minimax.ChannelName
-	case common.ChannelTypeDoubao:
+	case common.DoubaoChannel.Type:
 		return doubao.ChannelName
 	default:
 		return ChannelName
