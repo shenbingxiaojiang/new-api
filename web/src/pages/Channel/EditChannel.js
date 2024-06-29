@@ -282,16 +282,17 @@ const EditChannel = (props) => {
   }, [originModelOptions, inputs.models]);
 
   useEffect(() => {
-    fetchModels().then();
+    fetchModels().then(() => {
+      if (isEdit) {
+        loadChannel().then();
+      } else {
+        setInputs(originInputs);
+        let localModels = getChannelModels(inputs.type);
+        setBasicModels(localModels);
+        setInputs((inputs) => ({ ...inputs, models: localModels }));
+      }
+    });
     fetchGroups().then();
-    if (isEdit) {
-      loadChannel().then(() => {});
-    } else {
-      setInputs(originInputs);
-      let localModels = getChannelModels(inputs.type);
-      setBasicModels(localModels);
-      setInputs((inputs) => ({ ...inputs, models: localModels }));
-    }
   }, [props.editingChannel.id]);
 
   const submit = async () => {
