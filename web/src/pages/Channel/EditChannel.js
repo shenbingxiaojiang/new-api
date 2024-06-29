@@ -189,43 +189,46 @@ const EditChannel = (props) => {
     setLoading(true);
     const models = [];
     let err = false;
-    if (isEdit) {
-      const res = await API.get('/api/channel/fetch_models/' + channelId);
-      if (res.data && res.data?.success) {
-        models.push(...res.data.data);
+    // if (isEdit) {
+    //   const res = await API.get('/api/channel/fetch_models/' + channelId);
+    //   if (res.data && res.data?.success) {
+    //     models.push(...res.data.data);
+    //   } else {
+    //     err = true;
+    //   }
+    // } else {
+    //   if (!inputs?.['key']) {
+    //     showError('请填写密钥');
+    //     err = true;
+    //   } else {
+    const host = new URL(inputs['base_url'] || 'https://api.openai.com');
+    const url = `https://${host.hostname}/v1/models`;
+    const key = inputs['key'];
+    try {
+      const res = await axios.get(url, {
+        headers: {
+          ...(key ? { Authorization: `Bearer ${key}` } : {}),
+        },
+      });
+      if (res.data && res.data.data && res.data.data.length > 0) {
+        models.push(...res.data.data.map((model) => model.id));
       } else {
         err = true;
       }
-    } else {
-      if (!inputs?.['key']) {
-        showError('请填写密钥');
-        err = true;
-      } else {
-        try {
-          const host = new URL(inputs['base_url'] || 'https://api.openai.com');
-
-          const url = `https://${host.hostname}/v1/models`;
-          const key = inputs['key'];
-          const res = await axios.get(url, {
-            headers: {
-              Authorization: `Bearer ${key}`,
-            },
-          });
-          if (res.data && res.data?.success) {
-            models.push(...res.data.data.map((model) => model.id));
-          } else {
-            err = true;
-          }
-        } catch (error) {
-          err = true;
-        }
-      }
+    } catch (error) {
+      err = true;
     }
+    //   }
+    // }
     if (!err) {
       handleInputChange(name, Array.from(new Set(models)));
       showSuccess('获取模型列表成功');
     } else {
-      showError('获取模型列表失败');
+      if (!key) {
+        showError('获取模型列表失败，请填写密钥后再试');
+      } else {
+        showError('获取模型列表失败');
+      }
     }
     setLoading(false);
   };
