@@ -105,7 +105,7 @@ func FetchUpstreamModels(c *gin.Context) {
 			"message": err.Error(),
 		})
 	}
-	if result.Data == nil && len(result.Data) == 0 {
+	if result.Data == nil || len(result.Data) == 0 {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
 			"message": "上游返回错误",
