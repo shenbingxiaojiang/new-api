@@ -143,7 +143,7 @@ const EditChannel = (props) => {
   };
 
   const loadChannel = async () => {
-    setLoading(true);
+    // setLoading(true);
     let res = await API.get(`/api/channel/${channelId}`);
     if (res === undefined) {
       return;
@@ -178,7 +178,7 @@ const EditChannel = (props) => {
     } else {
       showError(message);
     }
-    setLoading(false);
+    // setLoading(false);
   };
 
   const fetchUpstreamModelList = async (name) => {
@@ -282,17 +282,19 @@ const EditChannel = (props) => {
   }, [originModelOptions, inputs.models]);
 
   useEffect(() => {
+    setLoading(true)
     fetchModels().then(() => {
+      fetchGroups().then();
       if (isEdit) {
-        loadChannel().then();
+        loadChannel().then(() => setLoading(false));
       } else {
         setInputs(originInputs);
         let localModels = getChannelModels(inputs.type);
         setBasicModels(localModels);
         setInputs((inputs) => ({ ...inputs, models: localModels }));
+        setLoading(false)
       }
     });
-    fetchGroups().then();
   }, [props.editingChannel.id]);
 
   const submit = async () => {
