@@ -187,7 +187,7 @@ const EditChannel = (props) => {
       return;
     }
     setLoading(true);
-    const models = inputs['models'] || [];
+    const models = [];
     let err = false;
     if (isEdit) {
       const res = await API.get('/api/channel/fetch_models/' + channelId);
