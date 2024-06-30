@@ -31,6 +31,7 @@ type Channel struct {
 	Priority          *int64  `json:"priority" gorm:"bigint;default:0"`
 	AutoBan           *int    `json:"auto_ban" gorm:"default:1"`
 	OtherInfo         string  `json:"other_info"`
+	Proxy             *string `json:"proxy" gorm:"default:''"`
 }
 
 func (channel *Channel) GetOtherInfo() map[string]interface{} {

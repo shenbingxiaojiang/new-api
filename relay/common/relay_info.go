@@ -27,6 +27,7 @@ type RelayInfo struct {
 	ApiKey            string
 	Organization      string
 	BaseUrl           string
+	Proxy             string
 }
 
 func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
@@ -56,6 +57,7 @@ func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 		ApiVersion:     c.GetString("api_version"),
 		ApiKey:         strings.TrimPrefix(c.Request.Header.Get("Authorization"), "Bearer "),
 		Organization:   c.GetString("channel_organization"),
+		Proxy:          c.GetString("proxy"),
 	}
 	if info.BaseUrl == "" {
 		ch, exists := common.ChannelMap[channelType]
@@ -96,6 +98,7 @@ type TaskRelayInfo struct {
 	OriginTaskID string
 
 	ConsumeQuota bool
+	Proxy        string
 }
 
 func GenTaskRelayInfo(c *gin.Context) (*TaskRelayInfo, error) {
@@ -121,6 +124,7 @@ func GenTaskRelayInfo(c *gin.Context) (*TaskRelayInfo, error) {
 		StartTime:      startTime,
 		ApiType:        apiType,
 		ApiKey:         strings.TrimPrefix(c.Request.Header.Get("Authorization"), "Bearer "),
+		Proxy:          c.GetString("proxy"),
 	}
 	if info.BaseUrl == "" {
 		ch, exists := common.ChannelMap[channelType]

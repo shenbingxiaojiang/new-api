@@ -24,7 +24,7 @@ func DoApiRequest(a Adaptor, c *gin.Context, info *common.RelayInfo, requestBody
 	if err != nil {
 		return nil, fmt.Errorf("get request url failed: %w", err)
 	}
-	req, err := http.NewRequest(c.Request.Method, fullRequestURL, requestBody)
+	req, err := http.NewRequestWithContext(c, c.Request.Method, fullRequestURL, requestBody)
 	if err != nil {
 		return nil, fmt.Errorf("new request failed: %w", err)
 	}

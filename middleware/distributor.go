@@ -178,6 +178,7 @@ func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, mode
 	c.Set("channel", channel.Type)
 	c.Set("channel_id", channel.Id)
 	c.Set("channel_name", channel.Name)
+	c.Set("proxy", *channel.Proxy)
 	ban := true
 	// parse *int to bool
 	if channel.AutoBan != nil && *channel.AutoBan == 0 {

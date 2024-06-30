@@ -53,6 +53,8 @@ function type2secretPrompt(type) {
       return '按照如下格式输入：AppId|SecretId|SecretKey';
     case 33:
       return '按照如下格式输入：Ak|Sk|Region';
+    case 10003:
+      return '按如下格式输入：ProjectId|JsonContent'
     default:
       return '请输入渠道对应的鉴权密钥';
   }
@@ -325,6 +327,10 @@ const EditChannel = (props) => {
     }
     if (localInputs.type === 18 && localInputs.other === '') {
       localInputs.other = 'v2.1';
+    }
+    if (localInputs.proxy && (!localInputs.proxy.startsWith('https://') && !localInputs.proxy.startsWith('http://') && !localInputs.proxy.startsWith('socks5://'))) {
+      showInfo("网络代理格式错误！")
+      return;
     }
     let res;
     if (!Array.isArray(localInputs.models)) {
@@ -727,6 +733,7 @@ const EditChannel = (props) => {
                 handleInputChange('key', value);
               }}
               value={inputs.key}
+              mode="password"
               autoComplete='new-password'
             />
           )}
@@ -868,6 +875,18 @@ const EditChannel = (props) => {
           {/*  }}*/}
           {/*  value={inputs.max_input_tokens}*/}
           {/*/>*/}
+          <div style={{ marginTop: 10 }}>
+            <Typography.Text strong>网络代理：</Typography.Text>
+          </div>
+          <Input
+            label='网络代理'
+            name='proxy'
+            placeholder='此项可选，用于请求网络代理'
+            onChange={(value) => {
+              handleInputChange('proxy', value);
+            }}
+            value={inputs.proxy}
+          />
         </Spin>
       </SideSheet>
     </>

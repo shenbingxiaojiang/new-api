@@ -42,6 +42,7 @@ func testChannel(channel *model.Channel, testModel string) (err error, openaiErr
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Set("channel", channel.Type)
 	c.Set("base_url", channel.GetBaseURL())
+	c.Set("proxy", *channel.Proxy)
 	switch channel.Type {
 	case common.AzureChannel.Type:
 		c.Set("api_version", channel.Other)
