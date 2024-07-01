@@ -86,6 +86,7 @@ func testChannel(channel *model.Channel, testModel string) (err error, openaiErr
 			testModel = modelMap[testModel]
 		}
 	}
+
 	request := buildTestRequest()
 	request.Model = testModel
 	meta.UpstreamModelName = testModel
@@ -226,13 +227,13 @@ func testAllChannels(notify bool) error {
 			if channel.AutoBan != nil && *channel.AutoBan == 0 {
 				ban = false
 			}
-			if openaiErr != nil && isChannelEnabled && ban {
+			if openaiErr != nil {
 				openAiErrWithStatus := dto.OpenAIErrorWithStatusCode{
 					StatusCode: -1,
 					Error:      *openaiErr,
 					LocalError: false,
 				}
-				if service.ShouldDisableChannel(&openAiErrWithStatus) {
+				if isChannelEnabled && service.ShouldDisableChannel(&openAiErrWithStatus) && ban {
 					service.DisableChannel(channel.Id, channel.Name, err.Error())
 				}
 			}
