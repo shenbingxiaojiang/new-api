@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"one-api/common"
 	"one-api/dto"
+	relaycommon "one-api/relay/common"
 	"one-api/service"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -84,7 +86,7 @@ func scholarAIHandler(c *gin.Context, resp *http.Response, promptTokens int, mod
 	return nil, &fullTextResponse.Usage
 }
 
-func scholarAIStreamHandler(c *gin.Context, resp *http.Response) (*dto.OpenAIErrorWithStatusCode, string) {
+func scholarAIStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.OpenAIErrorWithStatusCode, string) {
 	var responseText string
 	scanner := bufio.NewScanner(resp.Body)
 	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
@@ -109,9 +111,14 @@ func scholarAIStreamHandler(c *gin.Context, resp *http.Response) (*dto.OpenAIErr
 		stopChan <- true
 	}()
 	service.SetEventStreamHeaders(c)
+	isFirst := true
 	c.Stream(func(w io.Writer) bool {
 		select {
 		case data := <-dataChan:
+			if isFirst {
+				isFirst = false
+				info.FirstResponseTime = time.Now()
+			}
 			var response dto.ChatCompletionsStreamResponse
 			err := json.Unmarshal([]byte(data), &response)
 			if err != nil {

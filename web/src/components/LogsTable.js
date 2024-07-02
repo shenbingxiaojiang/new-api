@@ -143,6 +143,13 @@ function renderUseTime(type) {
 }
 
 function renderFirstUseTime(type) {
+  if (!type || type < 0) {
+    return (
+      <Tag color='grey' size='large'>
+        {' '} 无 {' '}
+      </Tag>
+    );
+  }
   let time = parseFloat(type) / 1000.0;
   time = time.toFixed(1);
   if (time < 3) {
@@ -278,8 +285,8 @@ const LogsTable = () => {
       title: '用时/首字',
       dataIndex: 'use_time',
       render: (text, record, index) => {
+        let other = getLogOther(record.other);
         if (record.is_stream) {
-          let other = getLogOther(record.other);
           return (
             <div>
               <Space>
@@ -294,6 +301,7 @@ const LogsTable = () => {
             <div>
               <Space>
                 {renderUseTime(text)}
+                {renderFirstUseTime(other.frt)}
                 {renderIsStream(record.is_stream)}
               </Space>
             </div>

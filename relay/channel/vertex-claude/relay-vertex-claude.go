@@ -15,6 +15,7 @@ import (
 	"one-api/dto"
 	relaymodel "one-api/dto"
 	"one-api/relay/channel/claude"
+	relaycommon "one-api/relay/common"
 	"one-api/service"
 	"strings"
 	"sync"
@@ -87,7 +88,7 @@ func vertexClaudeHandler(c *gin.Context, resp *http.Response) (*dto.OpenAIErrorW
 	return nil, &usage
 }
 
-func vertexClaudeStreamHandler(c *gin.Context, resp *http.Response) (*relaymodel.OpenAIErrorWithStatusCode, *relaymodel.Usage) {
+func vertexClaudeStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*relaymodel.OpenAIErrorWithStatusCode, *relaymodel.Usage) {
 	scanner := bufio.NewScanner(resp.Body)
 	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		if atEOF && len(data) == 0 {
@@ -122,9 +123,14 @@ func vertexClaudeStreamHandler(c *gin.Context, resp *http.Response) (*relaymodel
 	createdTime := common.GetTimestamp()
 	var usage relaymodel.Usage
 	service.SetEventStreamHeaders(c)
+	isFirst := true
 	c.Stream(func(w io.Writer) bool {
 		select {
 		case data := <-dataChan:
+			if isFirst {
+				isFirst = false
+				info.FirstResponseTime = time.Now()
+			}
 			claudeResp := new(claude.ClaudeResponse)
 			err := json.Unmarshal([]byte(data), &claudeResp)
 			if err != nil {
