@@ -62,7 +62,7 @@ func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 		ApiVersion:        c.GetString("api_version"),
 		ApiKey:            strings.TrimPrefix(c.Request.Header.Get("Authorization"), "Bearer "),
 		Organization:      c.GetString("channel_organization"),
-		Proxy:          c.GetString("proxy"),
+		Proxy:             c.GetString("proxy"),
 	}
 	if info.BaseUrl == "" {
 		ch, exists := common.ChannelMap[channelType]
@@ -76,7 +76,7 @@ func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 	}
 	if info.ChannelType == common.OpenAIChannel.Type || info.ChannelType == common.AnthropicChannel.Type ||
 		info.ChannelType == common.AwsChannel.Type || info.ChannelType == common.GeminiChannel.Type ||
-		info.ChannelType == common.VertexClaudeChannel.Type {
+		info.ChannelType == common.VertexClaudeChannel.Type || info.ChannelType == common.ScholarAIChannel.Type {
 		info.SupportStreamOptions = true
 	}
 	return info, nil

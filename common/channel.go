@@ -41,6 +41,8 @@ var (
 	CohereChannel         = Channel{Type: 34, BaseUrl: "https://api.cohere.ai"}
 	MiniMaxChannel        = Channel{Type: 35, BaseUrl: "https://api.minimax.chat"}
 	SunoAPIChannel        = Channel{Type: 36, BaseUrl: ""}
+	DifyChannel           = Channel{Type: 37, BaseUrl: ""}
+	JinaChannel           = Channel{Type: 38, BaseUrl: "https://api.jina.ai"}
 
 	ScholarAIChannel    = Channel{Type: 10001, BaseUrl: "https://api.scholarai.io"}
 	DoubaoChannel       = Channel{Type: 10002, BaseUrl: "https://ark.cn-beijing.volces.com"}

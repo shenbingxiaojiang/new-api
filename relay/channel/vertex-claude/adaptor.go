@@ -23,6 +23,10 @@ type Adaptor struct {
 func (a *Adaptor) Init(info *relaycommon.RelayInfo, request dto.GeneralOpenAIRequest) {
 }
 
+func (a *Adaptor) InitRerank(info *relaycommon.RelayInfo, request dto.RerankRequest) {
+	//TODO implement me
+}
+
 func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 	parts := strings.SplitN(info.ApiKey, "|", 2)
 	if len(parts) != 2 {
@@ -56,6 +60,10 @@ func (a *Adaptor) ConvertRequest(c *gin.Context, _ int, request *dto.GeneralOpen
 		return nil, errors.New("request is nil")
 	}
 	return requestOpenAI2VertexClaude(*request)
+}
+
+func (a *Adaptor) ConvertRerankRequest(c *gin.Context, relayMode int, request dto.RerankRequest) (any, error) {
+	return nil, nil
 }
 
 func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, requestBody io.Reader) (*http.Response, error) {

@@ -24,10 +24,13 @@ func getRerankPromptToken(rerankRequest dto.RerankRequest) int {
 }
 
 func RerankHelper(c *gin.Context, relayMode int) *dto.OpenAIErrorWithStatusCode {
-	relayInfo := relaycommon.GenRelayInfo(c)
+	relayInfo, err := relaycommon.GenRelayInfo(c)
+	if err != nil {
+		return service.OpenAIErrorWrapperLocal(err, "gen_relay_info_failed", http.StatusBadRequest)
+	}
 
 	var rerankRequest *dto.RerankRequest
-	err := common.UnmarshalBodyReusable(c, &rerankRequest)
+	err = common.UnmarshalBodyReusable(c, &rerankRequest)
 	if err != nil {
 		common.LogError(c, fmt.Sprintf("getAndValidateTextRequest failed: %s", err.Error()))
 		return service.OpenAIErrorWrapperLocal(err, "invalid_text_request", http.StatusBadRequest)
