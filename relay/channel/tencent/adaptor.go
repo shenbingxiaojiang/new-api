@@ -17,9 +17,15 @@ import (
 
 type Adaptor struct {
 	Sign      string
+	AppID     int64
 	Action    string
 	Version   string
 	Timestamp int64
+}
+
+func (a *Adaptor) InitRerank(info *relaycommon.RelayInfo, request dto.RerankRequest) {
+	//TODO implement me
+
 }
 
 func (a *Adaptor) Init(info *relaycommon.RelayInfo, request dto.GeneralOpenAIRequest) {
@@ -29,7 +35,7 @@ func (a *Adaptor) Init(info *relaycommon.RelayInfo, request dto.GeneralOpenAIReq
 }
 
 func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
-	return fmt.Sprintf("%s/hyllm/v1/chat/completions", info.BaseUrl), nil
+	return fmt.Sprintf("%s/", info.BaseUrl), nil
 }
 
 func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Request, info *relaycommon.RelayInfo) error {
@@ -47,14 +53,19 @@ func (a *Adaptor) ConvertRequest(c *gin.Context, relayMode int, request *dto.Gen
 	}
 	apiKey := c.Request.Header.Get("Authorization")
 	apiKey = strings.TrimPrefix(apiKey, "Bearer ")
-	_, secretId, secretKey, err := parseTencentConfig(apiKey)
+	appId, secretId, secretKey, err := parseTencentConfig(apiKey)
+	a.AppID = appId
 	if err != nil {
 		return nil, err
 	}
-	tencentRequest := requestOpenAI2Tencent(*request)
+	tencentRequest := requestOpenAI2Tencent(a, *request)
 	// we have to calculate the sign here
 	a.Sign = getTencentSign(*tencentRequest, a, secretId, secretKey)
 	return tencentRequest, nil
+}
+
+func (a *Adaptor) ConvertRerankRequest(c *gin.Context, relayMode int, request dto.RerankRequest) (any, error) {
+	return nil, nil
 }
 
 func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, requestBody io.Reader) (*http.Response, error) {

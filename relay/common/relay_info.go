@@ -10,25 +10,27 @@ import (
 )
 
 type RelayInfo struct {
-	ChannelType       int
-	ChannelId         int
-	TokenId           int
-	UserId            int
-	Group             string
-	TokenUnlimited    bool
-	StartTime         time.Time
-	FirstResponseTime time.Time
-	ApiType           int
-	IsStream          bool
-	RelayMode         int
-	UpstreamModelName string
-	RequestURLPath    string
-	ApiVersion        string
-	PromptTokens      int
-	ApiKey            string
-	Organization      string
-	BaseUrl           string
-	Proxy             string
+	ChannelType          int
+	ChannelId            int
+	TokenId              int
+	UserId               int
+	Group                string
+	TokenUnlimited       bool
+	StartTime            time.Time
+	FirstResponseTime    time.Time
+	ApiType              int
+	IsStream             bool
+	RelayMode            int
+	UpstreamModelName    string
+	RequestURLPath       string
+	ApiVersion           string
+	PromptTokens         int
+	ApiKey               string
+	Organization         string
+	BaseUrl              string
+	SupportStreamOptions bool
+	ShouldIncludeUsage   bool
+	Proxy                string
 }
 
 func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
@@ -71,6 +73,11 @@ func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 	}
 	if info.ChannelType == common.AzureChannel.Type {
 		info.ApiVersion = GetAPIVersion(c)
+	}
+	if info.ChannelType == common.OpenAIChannel.Type || info.ChannelType == common.AnthropicChannel.Type ||
+		info.ChannelType == common.AwsChannel.Type || info.ChannelType == common.GeminiChannel.Type ||
+		info.ChannelType == common.VertexClaudeChannel.Type {
+		info.SupportStreamOptions = true
 	}
 	return info, nil
 }

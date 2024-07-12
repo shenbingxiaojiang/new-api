@@ -20,6 +20,9 @@ const (
 	APITypePerplexity
 	APITypeAws
 	APITypeCohere
+	APITypeDify
+	APITypeJina
+
 	APITypeScholarAI
 	APITypeVertexClaude
 	APITypeDummy // this one is only for count, do not add any channel after this
@@ -58,6 +61,10 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = APITypeAws
 	case common.CohereChannel.Type:
 		apiType = APITypeCohere
+	case common.ChannelTypeDify:
+		apiType = APITypeDify
+	case common.ChannelTypeJina:
+		apiType = APITypeJina
 	case common.ScholarAIChannel.Type:
 		apiType = APITypeScholarAI
 	case common.VertexClaudeChannel.Type:

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"gorm.io/gorm"
 	"one-api/common"
+	"strings"
 )
 
 type Channel struct {
@@ -32,6 +33,13 @@ type Channel struct {
 	AutoBan           *int    `json:"auto_ban" gorm:"default:1"`
 	OtherInfo         string  `json:"other_info"`
 	Proxy             *string `json:"proxy" gorm:"default:''"`
+}
+
+func (channel *Channel) GetModels() []string {
+	if channel.Models == "" {
+		return []string{}
+	}
+	return strings.Split(strings.Trim(channel.Models, ","), ",")
 }
 
 func (channel *Channel) GetOtherInfo() map[string]interface{} {
