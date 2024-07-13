@@ -83,6 +83,8 @@ var ChannelList = []Channel{
 	CohereChannel,
 	MiniMaxChannel,
 	SunoAPIChannel,
+	DifyChannel,
+	JinaChannel,
 	ScholarAIChannel,
 	DoubaoChannel,
 	VertexClaudeChannel,
