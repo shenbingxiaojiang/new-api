@@ -7,6 +7,7 @@ import (
 	"one-api/relay/channel/aws"
 	"one-api/relay/channel/baidu"
 	"one-api/relay/channel/claude"
+	"one-api/relay/channel/cloudflare"
 	"one-api/relay/channel/cohere"
 	"one-api/relay/channel/dify"
 	"one-api/relay/channel/gemini"
@@ -61,6 +62,8 @@ func GetAdaptor(apiType int) channel.Adaptor {
 		return &dify.Adaptor{}
 	case constant.APITypeJina:
 		return &jina.Adaptor{}
+	case constant.APITypeCloudflare:
+		return &cloudflare.Adaptor{}
 	case constant.APITypeScholarAI:
 		return &scholarai.Adaptor{}
 	case constant.APITypeVertexClaude:

@@ -30,6 +30,8 @@ var defaultModelRatio = map[string]float64{
 	"gpt-4-32k":                      30,
 	"gpt-4-32k-0314":                 30,
 	"gpt-4-32k-0613":                 30,
+	"gpt-4o-mini":               0.075,		// $0.00015 / 1K tokens
+	"gpt-4o-mini-2024-07-18":    0.075,
 	"gpt-4o":                         2.5,  // $0.005 / 1K tokens
 	"gpt-4o-2024-05-13":              2.5,  // $0.005 / 1K tokens
 	"gpt-4-turbo":                    5,    // $0.01 / 1K tokens
@@ -104,12 +106,13 @@ var defaultModelRatio = map[string]float64{
 	"gemini-1.0-pro-latest":          1,
 	"gemini-1.0-pro-vision-latest":   1,
 	"gemini-ultra":                   1,
-	"chatglm_turbo":                  0.3572, // ￥0.005 / 1k tokens
-	"chatglm_pro":                    0.7143, // ￥0.01 / 1k tokens
-	"chatglm_std":                    0.3572, // ￥0.005 / 1k tokens
-	"chatglm_lite":                   0.1429, // ￥0.002 / 1k tokens
-	"glm-4":                          7.143,  // ￥0.1 / 1k tokens
-	"glm-4v":                         7.143,  // ￥0.1 / 1k tokens
+	"chatglm_turbo":                  0.3572,     // ￥0.005 / 1k tokens
+	"chatglm_pro":                    0.7143,     // ￥0.01 / 1k tokens
+	"chatglm_std":                    0.3572,     // ￥0.005 / 1k tokens
+	"chatglm_lite":                   0.1429,     // ￥0.002 / 1k tokens
+	"glm-4":                          7.143,      // ￥0.1 / 1k tokens
+	"glm-4v":                         0.05 * RMB, // ￥0.05 / 1k tokens
+	"glm-4-alltools":                 0.1 * RMB,  // ￥0.1 / 1k tokens
 	"glm-3-turbo":                    0.3572,
 	"qwen-turbo":                     0.8572, // ￥0.012 / 1k tokens
 	"qwen-plus":                      10,     // ￥0.14 / 1k tokens
@@ -157,6 +160,8 @@ var defaultModelRatio = map[string]float64{
 }
 
 var defaultModelPrice = map[string]float64{
+	"suno_music":        0.1,
+	"suno_lyrics":       0.01,
 	"dall-e-2":          0.02,
 	"dall-e-3":          0.04,
 	"gpt-4-gizmo-*":     0.1,
@@ -313,6 +318,10 @@ func GetCompletionRatio(name string) float64 {
 		return 4.0 / 3.0
 	}
 	if strings.HasPrefix(name, "gpt-4") && name != "gpt-4-all" && name != "gpt-4-gizmo-*" {
+		if strings.HasPrefix(name, "gpt-4o-mini") {
+			return 4
+		}
+
 		if strings.HasSuffix(name, "preview") || strings.HasPrefix(name, "gpt-4-turbo") || strings.HasPrefix(name, "gpt-4o") {
 			return 3
 		}
