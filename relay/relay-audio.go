@@ -47,7 +47,10 @@ func getAndValidAudioRequest(c *gin.Context, info *relaycommon.RelayInfo) (*dto.
 }
 
 func AudioHelper(c *gin.Context) *dto.OpenAIErrorWithStatusCode {
-	relayInfo := relaycommon.GenRelayInfo(c)
+	relayInfo, err := relaycommon.GenRelayInfo(c)
+	if err != nil {
+		return service.OpenAIErrorWrapper(err, "gen_relay_info_failed", http.StatusBadRequest)
+	}
 	audioRequest, err := getAndValidAudioRequest(c, relayInfo)
 
 	if err != nil {

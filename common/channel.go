@@ -43,6 +43,7 @@ var (
 	SunoAPIChannel        = Channel{Type: 36, BaseUrl: ""}
 	DifyChannel           = Channel{Type: 37, BaseUrl: ""}
 	JinaChannel           = Channel{Type: 38, BaseUrl: "https://api.jina.ai"}
+	CloudflareChannel     = Channel{Type: 39, BaseUrl: "https://api.cloudflare.com"}
 
 	ScholarAIChannel    = Channel{Type: 10001, BaseUrl: "https://api.scholarai.io"}
 	DoubaoChannel       = Channel{Type: 10002, BaseUrl: "https://ark.cn-beijing.volces.com"}
@@ -85,6 +86,8 @@ var ChannelList = []Channel{
 	SunoAPIChannel,
 	DifyChannel,
 	JinaChannel,
+	CloudflareChannel,
+
 	ScholarAIChannel,
 	DoubaoChannel,
 	VertexClaudeChannel,

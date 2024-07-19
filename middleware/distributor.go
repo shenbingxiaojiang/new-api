@@ -212,7 +212,7 @@ func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, mode
 		c.Set("api_version", channel.Other)
 	case common.AliChannel.Type:
 		c.Set("plugin", channel.Other)
-	case common.ChannelCloudflare:
+	case common.CloudflareChannel.Type:
 		c.Set("api_version", channel.Other)
 	}
 }

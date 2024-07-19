@@ -68,7 +68,10 @@ func getAndValidImageRequest(c *gin.Context, info *relaycommon.RelayInfo) (*dto.
 }
 
 func ImageHelper(c *gin.Context, relayMode int) *dto.OpenAIErrorWithStatusCode {
-	relayInfo := relaycommon.GenRelayInfo(c)
+	relayInfo, err := relaycommon.GenRelayInfo(c)
+	if err != nil {
+		return service.OpenAIErrorWrapper(err, "gen_relay_info_failed", http.StatusBadRequest)
+	}
 
 	imageRequest, err := getAndValidImageRequest(c, relayInfo)
 	if err != nil {
