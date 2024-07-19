@@ -28,7 +28,8 @@ func getAccessToken(json string) (string, error) {
 	data, ok := accessTokenMap.Load(json)
 	if ok {
 		token := data.(oauth2.Token)
-		if time.Now().Before(token.Expiry) {
+		timeUntilExpiry := time.Until(token.Expiry)
+		if timeUntilExpiry >= 10*time.Minute {
 			return token.AccessToken, nil
 		}
 	}

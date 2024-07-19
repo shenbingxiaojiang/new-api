@@ -3,6 +3,7 @@ package openai
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/bytedance/gopkg/util/gopool"
@@ -19,6 +20,17 @@ import (
 	"sync"
 	"time"
 )
+
+type Token struct {
+	AccessToken string
+	Expiry      time.Time
+}
+
+type Claims struct {
+	Exp int64 `json:"exp"`
+}
+
+var accessTokenMap sync.Map
 
 func OaiStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.OpenAIErrorWithStatusCode, *dto.Usage) {
 	containStreamUsage := false
@@ -375,4 +387,68 @@ func getTextFromJSON(body []byte) (string, error) {
 		return "", fmt.Errorf("unmarshal_response_body_failed err :%w", err)
 	}
 	return whisperResponse.Text, nil
+}
+
+func refreshToken2AccessToken(refreshToken string) (string, error) {
+	if val, ok := accessTokenMap.Load(refreshToken); ok {
+		token := val.(Token)
+		timeUntilExpiry := time.Until(token.Expiry)
+		if timeUntilExpiry >= 10*time.Minute {
+			return token.AccessToken, nil
+		}
+	}
+	requestBody, err := json.Marshal(map[string]string{
+		"client_id":     "pdlLIX2Y72MIl2rhLhTE9VV9bN905kBh",
+		"grant_type":    "refresh_token",
+		"redirect_uri":  "com.openai.chat://auth0.openai.com/ios/com.openai.chat/callback",
+		"refresh_token": refreshToken,
+	})
+	if err != nil {
+		return "", fmt.Errorf("error marshaling request body: %v", err)
+	}
+	resp, err := service.GetImpatientHttpClient().Post("https://auth0.openai.com/oauth/token", "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		return "", fmt.Errorf("error sending request: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	var result map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		return "", fmt.Errorf("error reading response body: %v", err)
+	}
+	defer resp.Body.Close()
+	accessToken := result["access_token"].(string)
+	claims, err := parseJWTWithoutVerification(accessToken)
+	if err != nil {
+		return "", fmt.Errorf("error parsing token: %v", err)
+	}
+	token := Token{
+		AccessToken: accessToken,
+		Expiry:      time.Unix(claims.Exp, 0),
+	}
+	accessTokenMap.Store(refreshToken, token)
+	return accessToken, nil
+}
+
+func parseJWTWithoutVerification(tokenString string) (*Claims, error) {
+	parts := strings.Split(tokenString, ".")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("invalid token format")
+	}
+
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return nil, fmt.Errorf("error decoding token payload: %v", err)
+	}
+
+	var claims Claims
+	err = json.Unmarshal(payload, &claims)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshaling claims: %v", err)
+	}
+
+	return &claims, nil
 }

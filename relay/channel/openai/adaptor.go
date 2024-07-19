@@ -64,6 +64,15 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Request, info *re
 		req.Header.Set("api-key", info.ApiKey)
 		return nil
 	}
+	if strings.HasPrefix(info.ApiKey, "rt-") && len(info.ApiKey) == 48 {
+		rt, _ := strings.CutPrefix(info.ApiKey, "rt-")
+		accessToken, err := refreshToken2AccessToken(rt)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "Bearer "+accessToken)
+		return nil
+	}
 	if info.ChannelType == common.OpenAIChannel.Type && "" != info.Organization {
 		req.Header.Set("OpenAI-Organization", info.Organization)
 	}
