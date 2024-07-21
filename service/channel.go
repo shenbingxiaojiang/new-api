@@ -39,7 +39,7 @@ func ShouldDisableChannel(channelType int, err *relaymodel.OpenAIErrorWithStatus
 	}
 	if err.StatusCode == http.StatusForbidden {
 		switch channelType {
-		case common.ChannelTypeGemini:
+		case common.GeminiChannel.Type:
 			return true
 		}
 	}
