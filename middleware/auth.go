@@ -38,6 +38,7 @@ func authHelper(c *gin.Context, minRole int) {
 			status = user.Status
 			useAccessToken = true
 			linuxDoEnable = user.LinuxDoId == "" || user.LinuxDoLevel >= common.LinuxDoMinLevel
+			useAccessToken = true
 		} else {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,

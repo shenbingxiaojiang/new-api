@@ -6,8 +6,8 @@ export const API = axios.create({
     ? import.meta.env.VITE_REACT_APP_SERVER_URL
     : '',
   headers: {
-    'New-API-User': getUserIdFromLocalStorage()
-  }
+    'New-API-User': getUserIdFromLocalStorage(),
+  },
 });
 
 API.interceptors.response.use(
