@@ -66,23 +66,32 @@ func (channel *Channel) Save() error {
 	return DB.Save(channel).Error
 }
 
-func GetAllChannels(startIdx int, num int, selectAll bool, idSort bool) ([]*Channel, error) {
-	var channels []*Channel
-	var err error
+func GetAllChannels(startIdx int, num int, selectAll bool, idSort bool) (channels []*Channel, total int64, err error) {
+	channels = []*Channel{}
 	order := "priority desc"
 	if idSort {
 		order = "id desc"
+	}
+	err = DB.Model(&Channel{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return channels, 0, err
 	}
 	if selectAll {
 		err = DB.Order(order).Find(&channels).Error
 	} else {
 		err = DB.Order(order).Limit(num).Offset(startIdx).Omit("key").Find(&channels).Error
 	}
-	return channels, err
+	return channels, total, err
 }
 
-func SearchChannels(keyword string, group string, model string) ([]*Channel, error) {
-	var channels []*Channel
+func SearchChannels(keyword string, group string, model string, idSort bool) (channels []*Channel, total int64, err error) {
+	channels = []*Channel{}
+	order := "priority desc"
+	if idSort {
+		order = "id desc"
+	}
+
+	channels = []*Channel{}
 	keyCol := "`key`"
 	groupCol := "`group`"
 	modelsCol := "`models`"
@@ -107,13 +116,19 @@ func SearchChannels(keyword string, group string, model string) ([]*Channel, err
 		whereClause = "(id = ? OR name LIKE ? OR " + keyCol + " = ?) AND " + modelsCol + " LIKE ?"
 		args = append(args, common.String2Int(keyword), "%"+keyword+"%", keyword, "%"+model+"%")
 	}
+	baseQuery = baseQuery.Where(whereClause, args...)
+
+	err = baseQuery.Model(&Channel{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return channels, 0, err
+	}
 
 	// 执行查询
-	err := baseQuery.Where(whereClause, args...).Find(&channels).Error
+	err = baseQuery.Order(order).Find(&channels).Error
 	if err != nil {
-		return nil, err
+		return channels, 0, err
 	}
-	return channels, nil
+	return channels, total, nil
 }
 
 func GetChannelById(id int, selectAll bool) (*Channel, error) {

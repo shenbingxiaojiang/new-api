@@ -199,7 +199,7 @@ func GetAllUsers(c *gin.Context) {
 	if p < 0 {
 		p = 0
 	}
-	users, err := model.GetAllUsers(p*common.ItemsPerPage, common.ItemsPerPage)
+	users, total, err := model.GetAllUsers(p*common.ItemsPerPage, common.ItemsPerPage)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -211,6 +211,7 @@ func GetAllUsers(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    users,
+		"total":   total,
 	})
 	return
 }
@@ -218,7 +219,7 @@ func GetAllUsers(c *gin.Context) {
 func SearchUsers(c *gin.Context) {
 	keyword := c.Query("keyword")
 	group := c.Query("group")
-	users, err := model.SearchUsers(keyword, group)
+	users, total, err := model.SearchUsers(keyword, group)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -230,6 +231,7 @@ func SearchUsers(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    users,
+		"total":   total,
 	})
 	return
 }

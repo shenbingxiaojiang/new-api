@@ -71,15 +71,18 @@ func GetMaxUserId() int {
 	return user.Id
 }
 
-func GetAllUsers(startIdx int, num int) (users []*User, err error) {
+func GetAllUsers(startIdx int, num int) (users []*User, total int64, err error) {
+	users = []*User{}
+	err = DB.Model(&User{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return users, 0, err
+	}
 	err = DB.Unscoped().Order("id desc").Limit(num).Offset(startIdx).Omit("password").Find(&users).Error
-	return users, err
+	return users, total, err
 }
 
-func SearchUsers(keyword string, group string) ([]*User, error) {
-	var users []*User
-	var err error
-
+func SearchUsers(keyword string, group string) (users []*User, total int64, err error) {
+	users = []*User{}
 	// 尝试将关键字转换为整数ID
 	keywordInt, err := strconv.Atoi(keyword)
 	if err == nil {
@@ -88,9 +91,13 @@ func SearchUsers(keyword string, group string) ([]*User, error) {
 		if group != "" {
 			query = query.Where("`group` = ?", group) // 使用反引号包围group
 		}
+		err = query.Model(&User{}).Count(&total).Error
+		if err != nil || total == 0 {
+			return users, 0, err
+		}
 		err = query.Find(&users).Error
 		if err != nil || len(users) > 0 {
-			return users, err
+			return users, total, err
 		}
 	}
 
@@ -103,9 +110,13 @@ func SearchUsers(keyword string, group string) ([]*User, error) {
 	} else {
 		query = query.Where(likeCondition, "%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
 	}
+	err = query.Model(&User{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return users, 0, err
+	}
 	err = query.Find(&users).Error
 
-	return users, err
+	return users, total, err
 }
 
 func GetUserById(id int, selectAll bool) (*User, error) {

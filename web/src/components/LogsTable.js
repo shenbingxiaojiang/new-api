@@ -542,13 +542,13 @@ const LogsTable = () => {
     const res = await API.get(url);
     const { success, message, total, data } = res.data;
     if (success) {
-      if (startIdx === 0) {
-        setLogsFormat(data, total);
-      } else {
-        let newLogs = [...logs];
-        newLogs.splice(startIdx * pageSize, data.length, ...data);
-        setLogsFormat(newLogs, total);
-      }
+      // if (startIdx === 0) {
+      setLogsFormat(data, total);
+      // } else {
+      //   let newLogs = [...logs];
+      //   newLogs.splice(startIdx * pageSize, data.length, ...data);
+      //   setLogsFormat(newLogs, total);
+      // }
     } else {
       showError(message);
     }
@@ -562,10 +562,10 @@ const LogsTable = () => {
 
   const handlePageChange = (page) => {
     setActivePage(page);
-    if (page === Math.ceil(logs.length / pageSize) + 1) {
+    // if (page === Math.ceil(logs.length / pageSize) + 1) {
       // In this case we have to load more data and then append them.
-      loadLogs(page - 1, pageSize, logType).then((r) => {});
-    }
+    loadLogs(page - 1, pageSize, logType).then((r) => {});
+    // }
   };
 
   const handlePageSizeChange = async (size) => {
@@ -606,24 +606,24 @@ const LogsTable = () => {
       });
   }, []);
 
-  const searchLogs = async () => {
-    if (searchKeyword === '') {
-      // if keyword is blank, load files instead.
-      await loadLogs(0, pageSize);
-      setActivePage(1);
-      return;
-    }
-    setSearching(true);
-    const res = await API.get(`/api/log/self/search?keyword=${searchKeyword}`);
-    const { success, message, data } = res.data;
-    if (success) {
-      setLogs(data);
-      setActivePage(1);
-    } else {
-      showError(message);
-    }
-    setSearching(false);
-  };
+  // const searchLogs = async () => {
+  //   if (searchKeyword === '') {
+  //     // if keyword is blank, load files instead.
+  //     await loadLogs(0, pageSize);
+  //     setActivePage(1);
+  //     return;
+  //   }
+  //   setSearching(true);
+  //   const res = await API.get(`/api/log/self/search?keyword=${searchKeyword}`);
+  //   const { success, message, data } = res.data;
+  //   if (success) {
+  //     setLogs(data);
+  //     setActivePage(1);
+  //   } else {
+  //     showError(message);
+  //   }
+  //   setSearching(false);
+  // };
 
   return (
     <>
@@ -727,7 +727,7 @@ const LogsTable = () => {
         <Table
           style={{ marginTop: 5 }}
           columns={columns}
-          dataSource={pageData}
+          dataSource={logs}
           pagination={{
             currentPage: activePage,
             pageSize: pageSize,

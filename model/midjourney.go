@@ -31,8 +31,8 @@ type TaskQueryParams struct {
 	EndTimestamp   string
 }
 
-func GetAllUserTask(userId int, startIdx int, num int, queryParams TaskQueryParams) []*Midjourney {
-	var tasks []*Midjourney
+func GetAllUserTask(userId int, startIdx int, num int, queryParams TaskQueryParams) (tasks []*Midjourney, total int64) {
+	tasks = []*Midjourney{}
 	var err error
 
 	// 初始化查询构建器
@@ -49,17 +49,21 @@ func GetAllUserTask(userId int, startIdx int, num int, queryParams TaskQueryPara
 		query = query.Where("submit_time <= ?", queryParams.EndTimestamp)
 	}
 
+	err = query.Model(&Midjourney{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return tasks, 0
+	}
 	// 获取数据
 	err = query.Order("id desc").Limit(num).Offset(startIdx).Find(&tasks).Error
 	if err != nil {
-		return nil
+		return tasks, 0
 	}
 
-	return tasks
+	return tasks, total
 }
 
-func GetAllTasks(startIdx int, num int, queryParams TaskQueryParams) []*Midjourney {
-	var tasks []*Midjourney
+func GetAllTasks(startIdx int, num int, queryParams TaskQueryParams) (tasks []*Midjourney, total int64) {
+	tasks = []*Midjourney{}
 	var err error
 
 	// 初始化查询构建器
@@ -79,13 +83,17 @@ func GetAllTasks(startIdx int, num int, queryParams TaskQueryParams) []*Midjourn
 		query = query.Where("submit_time <= ?", queryParams.EndTimestamp)
 	}
 
+	err = query.Model(&Midjourney{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return tasks, 0
+	}
 	// 获取数据
 	err = query.Order("id desc").Limit(num).Offset(startIdx).Find(&tasks).Error
 	if err != nil {
-		return nil
+		return tasks, 0
 	}
 
-	return tasks
+	return tasks, total
 }
 
 func GetAllUnFinishTasks() []*Midjourney {

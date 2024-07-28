@@ -21,16 +21,25 @@ type Redemption struct {
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }
 
-func GetAllRedemptions(startIdx int, num int) ([]*Redemption, error) {
-	var redemptions []*Redemption
-	var err error
+func GetAllRedemptions(startIdx int, num int) (redemptions []*Redemption, total int64, err error) {
+	redemptions = []*Redemption{}
+	err = DB.Model(&Redemption{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return redemptions, 0, err
+	}
 	err = DB.Order("id desc").Limit(num).Offset(startIdx).Find(&redemptions).Error
-	return redemptions, err
+	return redemptions, total, err
 }
 
-func SearchRedemptions(keyword string) (redemptions []*Redemption, err error) {
-	err = DB.Where("id = ? or name LIKE ?", keyword, keyword+"%").Find(&redemptions).Error
-	return redemptions, err
+func SearchRedemptions(keyword string) (redemptions []*Redemption, total int64, err error) {
+	redemptions = []*Redemption{}
+	baseQuery := DB.Where("id = ? or name LIKE ?", keyword, keyword+"%")
+	err = baseQuery.Model(&Redemption{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return redemptions, 0, err
+	}
+	err = baseQuery.Find(&redemptions).Error
+	return redemptions, total, err
 }
 
 func GetRedemptionById(id int) (*Redemption, error) {

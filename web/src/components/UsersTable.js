@@ -215,7 +215,7 @@ const UsersTable = () => {
                 position={'left'}
                 onConfirm={() => {
                   manageUser(record.username, 'delete', record).then(() => {
-                    removeRecord(record.id);
+                    refresh()
                   });
                 }}
               >
@@ -237,7 +237,7 @@ const UsersTable = () => {
   const [searching, setSearching] = useState(false);
   const [searchGroup, setSearchGroup] = useState('');
   const [groupOptions, setGroupOptions] = useState([]);
-  const [userCount, setUserCount] = useState(ITEMS_PER_PAGE);
+  const [userCount, setUserCount] = useState(0);
   const [showAddUser, setShowAddUser] = useState(false);
   const [showEditUser, setShowEditUser] = useState(false);
   const [editingUser, setEditingUser] = useState({
@@ -252,32 +252,19 @@ const UsersTable = () => {
     }
   };
 
-  const removeRecord = (key) => {
-    let newDataSource = [...users];
-    if (key != null) {
-      let idx = newDataSource.findIndex((data) => data.id === key);
-
-      if (idx > -1) {
-        // update deletedAt
-        newDataSource[idx].DeletedAt = new Date();
-        setUsers(newDataSource);
-      }
-    }
-  };
-
   const loadUsers = async (startIdx) => {
     const res = await API.get(`/api/user/?p=${startIdx}`);
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
-      if (startIdx === 0) {
-        setUsers(data);
-        setCount(data);
-      } else {
-        let newUsers = users;
-        newUsers.push(...data);
-        setUsers(newUsers);
-        setCount(newUsers);
-      }
+      // if (startIdx === 0) {
+      setUsers(data);
+      setUserCount(total);
+      // } else {
+      //   let newUsers = users;
+      //   newUsers.push(...data);
+      //   setUsers(newUsers);
+      //   setUserCount(total);
+      // }
     } else {
       showError(message);
     }
@@ -354,9 +341,10 @@ const UsersTable = () => {
     const res = await API.get(
       `/api/user/search?keyword=${searchKeyword}&group=${searchGroup}`,
     );
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
       setUsers(data);
+      setUserCount(total)
       setActivePage(1);
     } else {
       showError(message);
@@ -384,10 +372,10 @@ const UsersTable = () => {
 
   const handlePageChange = (page) => {
     setActivePage(page);
-    if (page === Math.ceil(users.length / ITEMS_PER_PAGE) + 1) {
+    // if (page === Math.ceil(users.length / ITEMS_PER_PAGE) + 1) {
       // In this case we have to load more data and then append them.
-      loadUsers(page - 1).then((r) => {});
-    }
+    loadUsers(page - 1).then((r) => {});
+    // }
   };
 
   const pageData = users.slice(
@@ -488,7 +476,7 @@ const UsersTable = () => {
 
       <Table
         columns={columns}
-        dataSource={pageData}
+        dataSource={users}
         pagination={{
           currentPage: activePage,
           pageSize: ITEMS_PER_PAGE,

@@ -66,7 +66,6 @@ func testChannel(channel *model.Channel, testModel string) (err error, openAIErr
 		}
 	}
 
-
 	c.Request.Header.Set("Authorization", "Bearer "+channel.Key)
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Set("channel", channel.Type)
@@ -214,7 +213,7 @@ func testAllChannels(notify bool) error {
 	}
 	testAllChannelsRunning = true
 	testAllChannelsLock.Unlock()
-	channels, err := model.GetAllChannels(0, 0, true, false)
+	channels, _, err := model.GetAllChannels(0, 0, true, false)
 	if err != nil {
 		return err
 	}

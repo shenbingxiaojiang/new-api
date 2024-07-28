@@ -239,7 +239,7 @@ func GetAllTask(c *gin.Context) {
 		EndTimestamp:   endTimestamp,
 	}
 
-	logs := model.TaskGetAllTasks(p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
+	logs, total := model.TaskGetAllTasks(p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
 	if logs == nil {
 		logs = make([]*model.Task, 0)
 	}
@@ -248,6 +248,7 @@ func GetAllTask(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    logs,
+		"total":   total,
 	})
 }
 
@@ -271,7 +272,7 @@ func GetUserTask(c *gin.Context) {
 		EndTimestamp:   endTimestamp,
 	}
 
-	logs := model.TaskGetAllUserTask(userId, p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
+	logs, total := model.TaskGetAllUserTask(userId, p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
 	if logs == nil {
 		logs = make([]*model.Task, 0)
 	}
@@ -280,5 +281,6 @@ func GetUserTask(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    logs,
+		"total":   total,
 	})
 }

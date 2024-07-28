@@ -89,8 +89,8 @@ func InitTask(platform constant.TaskPlatform, relayInfo *commonRelay.TaskRelayIn
 	return t
 }
 
-func TaskGetAllUserTask(userId int, startIdx int, num int, queryParams SyncTaskQueryParams) []*Task {
-	var tasks []*Task
+func TaskGetAllUserTask(userId int, startIdx int, num int, queryParams SyncTaskQueryParams) (tasks []*Task, total int64) {
+	tasks = []*Task{}
 	var err error
 
 	// 初始化查询构建器
@@ -116,17 +116,21 @@ func TaskGetAllUserTask(userId int, startIdx int, num int, queryParams SyncTaskQ
 		query = query.Where("submit_time <= ?", queryParams.EndTimestamp)
 	}
 
+	err = query.Model(&Task{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return tasks, 0
+	}
 	// 获取数据
 	err = query.Omit("channel_id").Order("id desc").Limit(num).Offset(startIdx).Find(&tasks).Error
 	if err != nil {
-		return nil
+		return tasks, 0
 	}
 
-	return tasks
+	return tasks, total
 }
 
-func TaskGetAllTasks(startIdx int, num int, queryParams SyncTaskQueryParams) []*Task {
-	var tasks []*Task
+func TaskGetAllTasks(startIdx int, num int, queryParams SyncTaskQueryParams) (tasks []*Task, total int64) {
+	tasks = []*Task{}
 	var err error
 
 	// 初始化查询构建器
@@ -161,13 +165,17 @@ func TaskGetAllTasks(startIdx int, num int, queryParams SyncTaskQueryParams) []*
 		query = query.Where("submit_time <= ?", queryParams.EndTimestamp)
 	}
 
+	err = query.Model(&Task{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return tasks, 0
+	}
 	// 获取数据
 	err = query.Order("id desc").Limit(num).Offset(startIdx).Find(&tasks).Error
 	if err != nil {
-		return nil
+		return tasks, 0
 	}
 
-	return tasks
+	return tasks, total
 }
 
 func GetAllUnFinishSyncTasks(limit int) []*Task {

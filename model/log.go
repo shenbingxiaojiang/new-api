@@ -130,6 +130,7 @@ func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName
 }
 
 func GetUserLogs(userId int, logType int, startTimestamp int64, endTimestamp int64, modelName string, tokenName string, startIdx int, num int) (logs []*Log, total int64, err error) {
+	logs = []*Log{}
 	var tx *gorm.DB
 	if logType == LogTypeUnknown {
 		tx = DB.Where("user_id = ?", userId)
@@ -150,12 +151,11 @@ func GetUserLogs(userId int, logType int, startTimestamp int64, endTimestamp int
 	}
 
 	err = tx.Model(&Log{}).Count(&total).Error
-	if err != nil {
-		return nil, 0, err
+	if err != nil || total == 0 {
+		return logs, 0, err
 	}
 
 	err = tx.Order("id desc").Limit(num).Offset(startIdx).Omit("id").Find(&logs).Error
-	return logs, total, err
 	for i := range logs {
 		var otherMap map[string]interface{}
 		otherMap = common.StrToMap(logs[i].Other)

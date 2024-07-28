@@ -122,7 +122,7 @@ const RedemptionsTable = () => {
             position={'left'}
             onConfirm={() => {
               manageRedemption(record.id, 'delete', record).then(() => {
-                removeRecord(record.key);
+                refresh();
               });
             }}
           >
@@ -176,7 +176,7 @@ const RedemptionsTable = () => {
   const [activePage, setActivePage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searching, setSearching] = useState(false);
-  const [tokenCount, setTokenCount] = useState(ITEMS_PER_PAGE);
+  const [redemptionCount, setRedemptionCount] = useState(ITEMS_PER_PAGE);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [editingRedemption, setEditingRedemption] = useState({
     id: undefined,
@@ -195,46 +195,35 @@ const RedemptionsTable = () => {
   //     }
   // }
 
-  const setRedemptionFormat = (redeptions) => {
+  const setRedemptionFormat = (redeptions, total) => {
     // for (let i = 0; i < redeptions.length; i++) {
     //     redeptions[i].key = '' + redeptions[i].id;
     // }
     // data.key = '' + data.id
     setRedemptions(redeptions);
-    if (redeptions.length >= activePage * ITEMS_PER_PAGE) {
-      setTokenCount(redeptions.length + 1);
-    } else {
-      setTokenCount(redeptions.length);
-    }
+    // if (redeptions.length >= activePage * ITEMS_PER_PAGE) {
+    //   setTokenCount(redeptions.length + 1);
+    // } else {
+    //   setTokenCount(redeptions.length);
+    // }
+    setRedemptionCount(total)
   };
 
   const loadRedemptions = async (startIdx) => {
     const res = await API.get(`/api/redemption/?p=${startIdx}`);
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
-      if (startIdx === 0) {
-        setRedemptionFormat(data);
-      } else {
-        let newRedemptions = redemptions;
-        newRedemptions.push(...data);
-        setRedemptionFormat(newRedemptions);
-      }
+      // if (startIdx === 0) {
+      setRedemptionFormat(data, total);
+      // } else {
+      //   let newRedemptions = redemptions;
+      //   newRedemptions.push(...data);
+      //   setRedemptionFormat(newRedemptions, total);
+      // }
     } else {
       showError(message);
     }
     setLoading(false);
-  };
-
-  const removeRecord = (key) => {
-    let newDataSource = [...redemptions];
-    if (key != null) {
-      let idx = newDataSource.findIndex((data) => data.key === key);
-
-      if (idx > -1) {
-        newDataSource.splice(idx, 1);
-        setRedemptions(newDataSource);
-      }
-    }
   };
 
   const copyText = async (text) => {
@@ -311,9 +300,10 @@ const RedemptionsTable = () => {
     const res = await API.get(
       `/api/redemption/search?keyword=${searchKeyword}`,
     );
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
       setRedemptions(data);
+      setRedemptionCount(total)
       setActivePage(1);
     } else {
       showError(message);
@@ -341,10 +331,10 @@ const RedemptionsTable = () => {
 
   const handlePageChange = (page) => {
     setActivePage(page);
-    if (page === Math.ceil(redemptions.length / ITEMS_PER_PAGE) + 1) {
+    // if (page === Math.ceil(redemptions.length / ITEMS_PER_PAGE) + 1) {
       // In this case we have to load more data and then append them.
-      loadRedemptions(page - 1).then((r) => {});
-    }
+    loadRedemptions(page - 1).then((r) => {});
+    // }
   };
 
   let pageData = redemptions.slice(
@@ -395,11 +385,11 @@ const RedemptionsTable = () => {
       <Table
         style={{ marginTop: 20 }}
         columns={columns}
-        dataSource={pageData}
+        dataSource={redemptions}
         pagination={{
           currentPage: activePage,
           pageSize: ITEMS_PER_PAGE,
-          total: tokenCount,
+          total: redemptionCount,
           // showSizeChanger: true,
           // pageSizeOptions: [10, 20, 50, 100],
           formatPageText: (page) =>

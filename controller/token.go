@@ -20,7 +20,7 @@ func GetAllTokens(c *gin.Context) {
 	} else if size > 100 {
 		size = 100
 	}
-	tokens, err := model.GetAllUserTokens(userId, p*size, size)
+	tokens, total, err := model.GetAllUserTokens(userId, p*size, size)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -32,6 +32,7 @@ func GetAllTokens(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    tokens,
+		"total":   total,
 	})
 	return
 }
@@ -40,7 +41,7 @@ func SearchTokens(c *gin.Context) {
 	userId := c.GetInt("id")
 	keyword := c.Query("keyword")
 	token := c.Query("token")
-	tokens, err := model.SearchUserTokens(userId, keyword, token)
+	tokens, total, err := model.SearchUserTokens(userId, keyword, token)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -52,6 +53,7 @@ func SearchTokens(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    tokens,
+		"total":   total,
 	})
 	return
 }

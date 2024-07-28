@@ -268,7 +268,7 @@ const TokensTable = () => {
             position={'left'}
             onConfirm={() => {
               manageToken(record.id, 'delete', record).then(() => {
-                removeRecord(record.key);
+                refresh();
               });
             }}
           >
@@ -340,13 +340,9 @@ const TokensTable = () => {
     }, 500);
   };
 
-  const setTokensFormat = (tokens) => {
+  const setTokensFormat = (tokens, total) => {
     setTokens(tokens);
-    if (tokens.length >= pageSize) {
-      setTokenCount(tokens.length + pageSize);
-    } else {
-      setTokenCount(tokens.length);
-    }
+    setTokenCount(total)
   };
 
   let pageData = tokens.slice(
@@ -356,15 +352,15 @@ const TokensTable = () => {
   const loadTokens = async (startIdx) => {
     setLoading(true);
     const res = await API.get(`/api/token/?p=${startIdx}&size=${pageSize}`);
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
-      if (startIdx === 0) {
-        setTokensFormat(data);
-      } else {
-        let newTokens = [...tokens];
-        newTokens.splice(startIdx * pageSize, data.length, ...data);
-        setTokensFormat(newTokens);
-      }
+      // if (startIdx === 0) {
+      setTokensFormat(data, total);
+      // } else {
+      //   let newTokens = [...tokens];
+      //   newTokens.splice(startIdx * pageSize, data.length, ...data);
+      //   setTokensFormat(newTokens, total);
+      // }
     } else {
       showError(message);
     }
@@ -450,18 +446,6 @@ const TokensTable = () => {
       });
   }, [pageSize]);
 
-  const removeRecord = (key) => {
-    let newDataSource = [...tokens];
-    if (key != null) {
-      let idx = newDataSource.findIndex((data) => data.key === key);
-
-      if (idx > -1) {
-        newDataSource.splice(idx, 1);
-        setTokensFormat(newDataSource);
-      }
-    }
-  };
-
   const manageToken = async (id, action, record) => {
     setLoading(true);
     let data = { id };
@@ -490,7 +474,6 @@ const TokensTable = () => {
         record.status = token.status;
         // newTokens[realIdx].status = token.status;
       }
-      setTokensFormat(newTokens);
     } else {
       showError(message);
     }
@@ -508,9 +491,9 @@ const TokensTable = () => {
     const res = await API.get(
       `/api/token/search?keyword=${searchKeyword}&token=${searchToken}`,
     );
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
-      setTokensFormat(data);
+      setTokensFormat(data, total);
       setActivePage(1);
     } else {
       showError(message);
@@ -542,10 +525,10 @@ const TokensTable = () => {
 
   const handlePageChange = (page) => {
     setActivePage(page);
-    if (page === Math.ceil(tokens.length / pageSize) + 1) {
+    // if (page === Math.ceil(tokens.length / pageSize) + 1) {
       // In this case we have to load more data and then append them.
-      loadTokens(page - 1).then((r) => {});
-    }
+    loadTokens(page - 1).then((r) => {});
+    // }
   };
 
   const rowSelection = {
@@ -612,7 +595,7 @@ const TokensTable = () => {
       <Table
         style={{ marginTop: 20 }}
         columns={columns}
-        dataSource={pageData}
+        dataSource={tokens}
         pagination={{
           currentPage: activePage,
           pageSize: pageSize,

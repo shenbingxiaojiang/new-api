@@ -241,7 +241,7 @@ const ChannelsTable = () => {
             position={'left'}
             onConfirm={() => {
               manageChannel(record.id, 'delete', record).then(() => {
-                removeRecord(record.id);
+                refresh();
               });
             }}
           >
@@ -314,7 +314,7 @@ const ChannelsTable = () => {
   const [showPrompt, setShowPrompt] = useState(
     shouldShowPrompt('channel-test'),
   );
-  const [channelCount, setChannelCount] = useState(pageSize);
+  const [channelCount, setChannelCount] = useState(0);
   const [groupOptions, setGroupOptions] = useState([]);
   const [showEdit, setShowEdit] = useState(false);
   const [enableBatchDelete, setEnableBatchDelete] = useState(false);
@@ -323,19 +323,8 @@ const ChannelsTable = () => {
   });
   const [selectedChannels, setSelectedChannels] = useState([]);
 
-  const removeRecord = (id) => {
-    let newDataSource = [...channels];
-    if (id != null) {
-      let idx = newDataSource.findIndex((data) => data.id === id);
 
-      if (idx > -1) {
-        newDataSource.splice(idx, 1);
-        setChannels(newDataSource);
-      }
-    }
-  };
-
-  const setChannelFormat = (channels) => {
+  const setChannelFormat = (channels, total) => {
     for (let i = 0; i < channels.length; i++) {
       // if (channels[i].type === 8) {
       //   showWarning(
@@ -358,11 +347,12 @@ const ChannelsTable = () => {
     }
     // data.key = '' + data.id
     setChannels(channels);
-    if (channels.length >= pageSize) {
-      setChannelCount(channels.length + pageSize);
-    } else {
-      setChannelCount(channels.length);
-    }
+    setChannelCount(total)
+    // if (channels.length >= pageSize) {
+    //   setChannelCount(channels.length + pageSize);
+    // } else {
+    //   setChannelCount(channels.length);
+    // }
   };
 
   const loadChannels = async (startIdx, pageSize, idSort) => {
@@ -373,15 +363,15 @@ const ChannelsTable = () => {
     if (res === undefined) {
       return;
     }
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
-      if (startIdx === 0) {
-        setChannelFormat(data);
-      } else {
-        let newChannels = [...channels];
-        newChannels.splice(startIdx * pageSize, data.length, ...data);
-        setChannelFormat(newChannels);
-      }
+      // if (startIdx === 0) {
+      setChannelFormat(data, total);
+      // } else {
+      //   let newChannels = [...channels];
+      //   newChannels.splice(startIdx * pageSize, data.length, ...data);
+      //   setChannelFormat(newChannels, total);
+      // }
     } else {
       showError(message);
     }
@@ -557,11 +547,11 @@ const ChannelsTable = () => {
     }
     setSearching(true);
     const res = await API.get(
-      `/api/channel/search?keyword=${searchKeyword}&group=${searchGroup}&model=${searchModel}`,
+      `/api/channel/search?keyword=${searchKeyword}&group=${searchGroup}&model=${searchModel}&id_sort=${idSort}`,
     );
-    const { success, message, data } = res.data;
+    const { success, message, data, total } = res.data;
     if (success) {
-      setChannelFormat(data);
+      setChannelFormat(data, total);
       setActivePage(1);
     } else {
       showError(message);
@@ -665,10 +655,10 @@ const ChannelsTable = () => {
 
   const handlePageChange = (page) => {
     setActivePage(page);
-    if (page === Math.ceil(channels.length / pageSize) + 1) {
+    // if (page === Math.ceil(channels.length / pageSize) + 1) {
       // In this case we have to load more data and then append them.
-      loadChannels(page - 1, pageSize, idSort).then((r) => {});
-    }
+    loadChannels(page - 1, pageSize, idSort).then((r) => {});
+    // }
   };
 
   const handlePageSizeChange = async (size) => {
@@ -801,7 +791,7 @@ const ChannelsTable = () => {
         className={'channel-table'}
         style={{ marginTop: 15 }}
         columns={columns}
-        dataSource={pageData}
+        dataSource={channels}
         pagination={{
           currentPage: activePage,
           pageSize: pageSize,

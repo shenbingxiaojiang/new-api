@@ -49,7 +49,7 @@ func GetAllChannels(c *gin.Context) {
 		pageSize = common.ItemsPerPage
 	}
 	idSort, _ := strconv.ParseBool(c.Query("id_sort"))
-	channels, err := model.GetAllChannels(p*pageSize, pageSize, false, idSort)
+	channels, total, err := model.GetAllChannels(p*pageSize, pageSize, false, idSort)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -60,6 +60,7 @@ func GetAllChannels(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
+		"total":   total,
 		"data":    channels,
 	})
 	return
@@ -144,8 +145,8 @@ func SearchChannels(c *gin.Context) {
 	keyword := c.Query("keyword")
 	group := c.Query("group")
 	modelKeyword := c.Query("model")
-	//idSort, _ := strconv.ParseBool(c.Query("id_sort"))
-	channels, err := model.SearchChannels(keyword, group, modelKeyword)
+	idSort, _ := strconv.ParseBool(c.Query("id_sort"))
+	channels, total, err := model.SearchChannels(keyword, group, modelKeyword, idSort)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -157,6 +158,7 @@ func SearchChannels(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    channels,
+		"total":   total,
 	})
 	return
 }

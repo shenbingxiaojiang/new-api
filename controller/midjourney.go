@@ -227,7 +227,7 @@ func GetAllMidjourney(c *gin.Context) {
 		EndTimestamp:   c.Query("end_timestamp"),
 	}
 
-	logs := model.GetAllTasks(p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
+	logs, total := model.GetAllTasks(p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
 	if logs == nil {
 		logs = make([]*model.Midjourney, 0)
 	}
@@ -241,6 +241,7 @@ func GetAllMidjourney(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    logs,
+		"total":   total,
 	})
 }
 
@@ -259,7 +260,7 @@ func GetUserMidjourney(c *gin.Context) {
 		EndTimestamp:   c.Query("end_timestamp"),
 	}
 
-	logs := model.GetAllUserTask(userId, p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
+	logs, total := model.GetAllUserTask(userId, p*common.ItemsPerPage, common.ItemsPerPage, queryParams)
 	if logs == nil {
 		logs = make([]*model.Midjourney, 0)
 	}
@@ -273,5 +274,6 @@ func GetUserMidjourney(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    logs,
+		"total":   total,
 	})
 }

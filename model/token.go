@@ -26,19 +26,29 @@ type Token struct {
 	DeletedAt          gorm.DeletedAt `gorm:"index"`
 }
 
-func GetAllUserTokens(userId int, startIdx int, num int) ([]*Token, error) {
-	var tokens []*Token
-	var err error
-	err = DB.Where("user_id = ?", userId).Order("id desc").Limit(num).Offset(startIdx).Find(&tokens).Error
-	return tokens, err
+func GetAllUserTokens(userId int, startIdx int, num int) (tokens []*Token, total int64, err error) {
+	tokens = []*Token{}
+	baseQuery := DB.Where("user_id = ?", userId)
+	err = baseQuery.Model(&Token{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return tokens, 0, err
+	}
+	err = baseQuery.Order("id desc").Limit(num).Offset(startIdx).Find(&tokens).Error
+	return tokens, total, err
 }
 
-func SearchUserTokens(userId int, keyword string, token string) (tokens []*Token, err error) {
+func SearchUserTokens(userId int, keyword string, token string) (tokens []*Token, total int64, err error) {
+	tokens = []*Token{}
 	if token != "" {
 		token = strings.Trim(token, "sk-")
 	}
-	err = DB.Where("user_id = ?", userId).Where("name LIKE ?", "%"+keyword+"%").Where("`key` LIKE ?", "%"+token+"%").Find(&tokens).Error
-	return tokens, err
+	baseQuery := DB.Where("user_id = ?", userId).Where("name LIKE ?", "%"+keyword+"%").Where("`key` LIKE ?", "%"+token+"%")
+	err = baseQuery.Model(&Token{}).Count(&total).Error
+	if err != nil || total == 0 {
+		return tokens, 0, err
+	}
+	err = baseQuery.Find(&tokens).Error
+	return tokens, total, err
 }
 
 func ValidateUserToken(key string) (token *Token, err error) {

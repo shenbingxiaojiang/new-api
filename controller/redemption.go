@@ -13,7 +13,7 @@ func GetAllRedemptions(c *gin.Context) {
 	if p < 0 {
 		p = 0
 	}
-	redemptions, err := model.GetAllRedemptions(p*common.ItemsPerPage, common.ItemsPerPage)
+	redemptions, total, err := model.GetAllRedemptions(p*common.ItemsPerPage, common.ItemsPerPage)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -25,13 +25,14 @@ func GetAllRedemptions(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    redemptions,
+		"total":   total,
 	})
 	return
 }
 
 func SearchRedemptions(c *gin.Context) {
 	keyword := c.Query("keyword")
-	redemptions, err := model.SearchRedemptions(keyword)
+	redemptions, total, err := model.SearchRedemptions(keyword)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -43,6 +44,7 @@ func SearchRedemptions(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    redemptions,
+		"total":   total,
 	})
 	return
 }

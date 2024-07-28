@@ -238,14 +238,14 @@ const LogsTable = () => {
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   };
 
-  const setLogsFormat = (logs) => {
+  const setLogsFormat = (logs, total) => {
     for (let i = 0; i < logs.length; i++) {
       logs[i].timestamp2string = timestamp2string(logs[i].created_at);
       logs[i].key = '' + logs[i].id;
     }
     // data.key = '' + data.id
     setLogs(logs);
-    setLogCount(logs.length + ITEMS_PER_PAGE);
+    setLogCount(total);
     // console.log(logCount);
   };
 
@@ -261,15 +261,15 @@ const LogsTable = () => {
       url = `/api/task/self?p=${startIdx}&task_id=${task_id}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}`;
     }
     const res = await API.get(url);
-    let { success, message, data } = res.data;
+    let { success, message, data, total } = res.data;
     if (success) {
-      if (startIdx === 0) {
-        setLogsFormat(data);
-      } else {
-        let newLogs = [...logs];
-        newLogs.splice(startIdx * ITEMS_PER_PAGE, data.length, ...data);
-        setLogsFormat(newLogs);
-      }
+      // if (startIdx === 0) {
+      setLogsFormat(data, total);
+      // } else {
+      //   let newLogs = [...logs];
+      //   newLogs.splice(startIdx * ITEMS_PER_PAGE, data.length, ...data);
+      //   setLogsFormat(newLogs, total);
+      // }
     } else {
       showError(message);
     }
@@ -283,10 +283,10 @@ const LogsTable = () => {
 
   const handlePageChange = (page) => {
     setActivePage(page);
-    if (page === Math.ceil(logs.length / ITEMS_PER_PAGE) + 1) {
+    // if (page === Math.ceil(logs.length / ITEMS_PER_PAGE) + 1) {
       // In this case we have to load more data and then append them.
-      loadLogs(page - 1).then((r) => {});
-    }
+    loadLogs(page - 1).then((r) => {});
+    // }
   };
 
   const refresh = async () => {
@@ -483,7 +483,7 @@ const LogsTable = () => {
         <Card>
           <Table
             columns={columns}
-            dataSource={pageData}
+            dataSource={logs}
             pagination={{
               currentPage: activePage,
               pageSize: ITEMS_PER_PAGE,
