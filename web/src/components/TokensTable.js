@@ -474,6 +474,7 @@ const TokensTable = () => {
         record.status = token.status;
         // newTokens[realIdx].status = token.status;
       }
+      setTokens(newTokens);
     } else {
       showError(message);
     }
