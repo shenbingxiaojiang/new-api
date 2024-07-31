@@ -63,14 +63,14 @@ func OaiStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.Rel
 			info.SetFirstResponseTime()
 			ticker.Reset(time.Duration(constant.StreamingTimeout) * time.Second)
 			data := scanner.Text()
-			if len(data) < 6 { // ignore blank line or wrong format
+			if len(data) < 5 { // ignore blank line or wrong format
 				continue
 			}
-			if data[:6] != "data: " && data[:6] != "[DONE]" {
+			if data[:5] != "data:" && data[:6] != "[DONE]" {
 				continue
 			}
 			mu.Lock()
-			data = data[6:]
+			data = strings.TrimSpace(data[5:])
 			if !strings.HasPrefix(data, "[DONE]") {
 				if lastStreamData != "" {
 					err := service.StringData(c, lastStreamData)

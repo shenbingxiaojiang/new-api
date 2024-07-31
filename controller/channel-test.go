@@ -54,6 +54,7 @@ func testChannel(channel *model.Channel, testModel string) (err error, openAIErr
 			}
 		}
 	}
+	requestModel := testModel
 	modelMapping := *channel.ModelMapping
 	if modelMapping != "" && modelMapping != "{}" {
 		modelMap := make(map[string]string)
@@ -86,6 +87,7 @@ func testChannel(channel *model.Channel, testModel string) (err error, openAIErr
 
 	request := buildTestRequest()
 	request.Model = testModel
+	meta.RequestModelName = requestModel
 	meta.UpstreamModelName = testModel
 	common.SysLog(fmt.Sprintf("testing channel %d with model %s", channel.Id, testModel))
 
