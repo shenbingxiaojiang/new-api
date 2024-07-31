@@ -78,6 +78,8 @@ func TextHelper(c *gin.Context) *dto.OpenAIErrorWithStatusCode {
 		return service.OpenAIErrorWrapperLocal(err, "invalid_text_request", http.StatusBadRequest)
 	}
 
+	relayInfo.RequestModelName = textRequest.Model
+	relayInfo.UpstreamModelName = textRequest.Model
 	// map model name
 	modelMapping := c.GetString("model_mapping")
 	//isModelMapped := false
@@ -89,11 +91,12 @@ func TextHelper(c *gin.Context) *dto.OpenAIErrorWithStatusCode {
 		}
 		if modelMap[textRequest.Model] != "" {
 			textRequest.Model = modelMap[textRequest.Model]
+			relayInfo.UpstreamModelName = modelMap[textRequest.Model]
 			// set upstream model name
 			//isModelMapped = true
 		}
 	}
-	relayInfo.UpstreamModelName = textRequest.Model
+
 	modelPrice, getModelPriceSuccess := common.GetModelPrice(textRequest.Model, false)
 	groupRatio := common.GetGroupRatio(relayInfo.Group)
 

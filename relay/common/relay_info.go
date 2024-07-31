@@ -22,6 +22,7 @@ type RelayInfo struct {
 	ApiType              int
 	IsStream             bool
 	RelayMode            int
+	RequestModelName     string
 	UpstreamModelName    string
 	RequestURLPath       string
 	ApiVersion           string

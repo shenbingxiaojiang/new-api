@@ -9,6 +9,7 @@ var ModelList = []string{
 	"Doubao-lite-128k",
 	"Doubao-lite-32k",
 	"Doubao-lite-4k",
+	"Doubao-bot-chat",
 }
 
 var ChannelName = "doubao"
