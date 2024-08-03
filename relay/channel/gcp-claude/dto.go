@@ -1,8 +1,8 @@
-package vertex_claude
+package gcp_claude
 
 import "one-api/relay/channel/claude"
 
-type VertexClaudeRequest struct {
+type GcpClaudeRequest struct {
 	// vertex-2023-10-16
 	AnthropicVersion string                 `json:"anthropic_version"`
 	System           string                 `json:"system"`

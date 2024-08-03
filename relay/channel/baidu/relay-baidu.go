@@ -245,20 +245,20 @@ func baiduEmbeddingHandler(c *gin.Context, resp *http.Response) (*dto.OpenAIErro
 	return nil, &fullTextResponse.Usage
 }
 
-func getBaiduAccessToken(apiKey string) (string, error) {
+func getBaiduAccessToken(proxy string, apiKey string) (string, error) {
 	if val, ok := baiduTokenStore.Load(apiKey); ok {
 		var accessToken BaiduAccessToken
 		if accessToken, ok = val.(BaiduAccessToken); ok {
 			// soon this will expire
 			if time.Now().Add(time.Hour).After(accessToken.ExpiresAt) {
 				go func() {
-					_, _ = getBaiduAccessTokenHelper(apiKey)
+					_, _ = getBaiduAccessTokenHelper(proxy, apiKey)
 				}()
 			}
 			return accessToken.AccessToken, nil
 		}
 	}
-	accessToken, err := getBaiduAccessTokenHelper(apiKey)
+	accessToken, err := getBaiduAccessTokenHelper(proxy, apiKey)
 	if err != nil {
 		return "", err
 	}
@@ -268,10 +268,14 @@ func getBaiduAccessToken(apiKey string) (string, error) {
 	return (*accessToken).AccessToken, nil
 }
 
-func getBaiduAccessTokenHelper(apiKey string) (*BaiduAccessToken, error) {
+func getBaiduAccessTokenHelper(proxy string, apiKey string) (*BaiduAccessToken, error) {
 	parts := strings.Split(apiKey, "|")
 	if len(parts) != 2 {
 		return nil, errors.New("invalid baidu apikey")
+	}
+	httpClient, err := common.GetProxiedHttpClient(proxy)
+	if err != nil {
+		return nil, err
 	}
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=%s&client_secret=%s",
 		parts[0], parts[1]), nil)
@@ -280,12 +284,11 @@ func getBaiduAccessTokenHelper(apiKey string) (*BaiduAccessToken, error) {
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
-	res, err := service.GetImpatientHttpClient().Do(req)
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer res.Body.Close()
-
 	var accessToken BaiduAccessToken
 	err = json.NewDecoder(res.Body).Decode(&accessToken)
 	if err != nil {

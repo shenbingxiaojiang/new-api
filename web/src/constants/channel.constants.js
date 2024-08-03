@@ -130,11 +130,11 @@ export const CHANNEL_OPTIONS = [
   },
   {
     key: 10003,
-    text: 'Vertex Claude',
+    text: 'GCP Claude',
     value: 10003,
     backgroundColor: 'rgb(203, 155, 122)',
     textColor: 'black',
-    label: 'Vertex Claude'
+    label: 'GCP Claude'
   },
   { key: 8, text: '自定义渠道', value: 8, color: 'pink', label: '自定义渠道' },
   {

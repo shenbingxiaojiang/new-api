@@ -24,9 +24,12 @@ func UpdateTaskBulk() {
 	//imageModel := "midjourney"
 	for {
 		time.Sleep(time.Duration(15) * time.Second)
-		common.SysLog("任务进度轮询开始")
 		ctx := context.TODO()
 		allTasks := model.GetAllUnFinishSyncTasks(500)
+		if len(allTasks) == 0 {
+			continue
+		}
+		common.SysLog("任务进度轮询开始")
 		platformTask := make(map[constant.TaskPlatform][]*model.Task)
 		for _, t := range allTasks {
 			platformTask[t.Platform] = append(platformTask[t.Platform], t)
@@ -113,7 +116,7 @@ func updateSunoTaskAll(ctx context.Context, channelId int, taskIds []string, tas
 	}
 	resp, err := adaptor.FetchTask(*channel.BaseURL, channel.Key, map[string]any{
 		"ids": taskIds,
-	})
+	}, *channel.Proxy)
 	if err != nil {
 		common.SysError(fmt.Sprintf("Get Task Do req error: %v", err))
 		return err
@@ -135,7 +138,7 @@ func updateSunoTaskAll(ctx context.Context, channelId int, taskIds []string, tas
 		return err
 	}
 	if !responseItems.IsSuccess() {
-		common.SysLog(fmt.Sprintf("渠道 #%d 未完成的任务有: %d, 成功获取到任务数: %d", channelId, len(taskIds), string(responseBody)))
+		common.SysLog(fmt.Sprintf("渠道 #%d 未完成的任务有: %d, 成功获取到任务数: %s", channelId, len(taskIds), string(responseBody)))
 		return err
 	}
 

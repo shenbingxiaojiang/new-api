@@ -126,13 +126,16 @@ func (a *TaskAdaptor) GetChannelName() string {
 	return ChannelName
 }
 
-func (a *TaskAdaptor) FetchTask(baseUrl, key string, body map[string]any) (*http.Response, error) {
+func (a *TaskAdaptor) FetchTask(baseUrl, key string, body map[string]any, proxy string) (*http.Response, error) {
 	requestUrl := fmt.Sprintf("%s/suno/fetch", baseUrl)
 	byteBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
-
+	httpClient, err := common.GetProxiedHttpClient(proxy)
+	if err != nil {
+		return nil, err
+	}
 	req, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer(byteBody))
 	if err != nil {
 		common.SysError(fmt.Sprintf("Get Task error: %v", err))
@@ -147,7 +150,7 @@ func (a *TaskAdaptor) FetchTask(baseUrl, key string, body map[string]any) (*http
 	req = req.WithContext(ctx)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+key)
-	resp, err := service.GetHttpClient().Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

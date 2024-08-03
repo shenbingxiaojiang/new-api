@@ -65,8 +65,8 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Request, info *re
 		return nil
 	}
 	if strings.HasPrefix(info.ApiKey, "rt-") && len(info.ApiKey) == 48 {
-		rt, _ := strings.CutPrefix(info.ApiKey, "rt-")
-		accessToken, err := refreshToken2AccessToken(rt)
+		rt := info.ApiKey[3:]
+		accessToken, err := refreshToken2AccessToken(info.Proxy, rt)
 		if err != nil {
 			return err
 		}

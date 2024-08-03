@@ -386,13 +386,17 @@ func getTextFromJSON(body []byte) (string, error) {
 	return whisperResponse.Text, nil
 }
 
-func refreshToken2AccessToken(refreshToken string) (string, error) {
+func refreshToken2AccessToken(proxy string, refreshToken string) (string, error) {
 	if val, ok := accessTokenMap.Load(refreshToken); ok {
 		token := val.(Token)
 		timeUntilExpiry := time.Until(token.Expiry)
 		if timeUntilExpiry >= 10*time.Minute {
 			return token.AccessToken, nil
 		}
+	}
+	httpClient, err := common.GetProxiedHttpClient(proxy)
+	if err != nil {
+		return "", err
 	}
 	requestBody, err := json.Marshal(map[string]string{
 		"client_id":     "pdlLIX2Y72MIl2rhLhTE9VV9bN905kBh",
@@ -403,7 +407,7 @@ func refreshToken2AccessToken(refreshToken string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error marshaling request body: %v", err)
 	}
-	resp, err := service.GetImpatientHttpClient().Post("https://auth0.openai.com/oauth/token", "application/json", bytes.NewBuffer(requestBody))
+	resp, err := httpClient.Post("https://auth0.openai.com/oauth/token", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return "", fmt.Errorf("error sending request: %v", err)
 	}

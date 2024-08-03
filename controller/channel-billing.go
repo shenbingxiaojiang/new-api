@@ -93,7 +93,11 @@ func GetResponseBody(method, url string, channel *model.Channel, headers http.He
 	for k := range headers {
 		req.Header.Add(k, headers.Get(k))
 	}
-	res, err := service.GetHttpClient().Do(req)
+	httpClient, err := common.GetProxiedHttpClient(*channel.Proxy)
+	if err != nil {
+		return nil, err
+	}
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

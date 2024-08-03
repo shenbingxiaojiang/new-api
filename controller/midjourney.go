@@ -13,7 +13,6 @@ import (
 	"one-api/constant"
 	"one-api/dto"
 	"one-api/model"
-	"one-api/service"
 	"strconv"
 	"time"
 )
@@ -92,7 +91,12 @@ func UpdateMidjourneyTaskBulk() {
 			req = req.WithContext(ctx)
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Set("mj-api-secret", midjourneyChannel.Key)
-			resp, err := service.GetHttpClient().Do(req)
+			httpClient, err := common.GetProxiedHttpClient(*midjourneyChannel.Proxy)
+			if err != nil {
+				common.LogError(ctx, fmt.Sprintf("Get Http Client failed: %v", err))
+				continue
+			}
+			resp, err := httpClient.Do(req)
 			if err != nil {
 				common.LogError(ctx, fmt.Sprintf("Get Task Do req error: %v", err))
 				continue

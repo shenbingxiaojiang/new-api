@@ -91,7 +91,7 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 	fullRequestURL := fmt.Sprintf("%s/rpc/2.0/ai_custom/v1/wenxinworkshop/%s", info.BaseUrl, suffix)
 	var accessToken string
 	var err error
-	if accessToken, err = getBaiduAccessToken(info.ApiKey); err != nil {
+	if accessToken, err = getBaiduAccessToken(info.Proxy, info.ApiKey); err != nil {
 		return "", err
 	}
 	fullRequestURL += "?access_token=" + accessToken

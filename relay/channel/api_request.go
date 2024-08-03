@@ -3,13 +3,12 @@ package channel
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
+	common2 "one-api/common"
 	"one-api/relay/common"
 	"one-api/relay/constant"
-	"one-api/service"
-
-	"github.com/gin-gonic/gin"
 )
 
 func SetupApiRequestHeader(info *common.RelayInfo, c *gin.Context, req *http.Request) {
@@ -68,7 +67,15 @@ func DoFormRequest(a Adaptor, c *gin.Context, info *common.RelayInfo, requestBod
 }
 
 func doRequest(c *gin.Context, req *http.Request) (*http.Response, error) {
-	resp, err := service.GetHttpClient().Do(req)
+	proxy, ok := req.Context().Value("proxy").(string)
+	if !ok {
+		proxy = ""
+	}
+	httpClient, err := common2.GetProxiedHttpClient(proxy)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package vertex_claude
+package gcp_claude
 
 import (
 	"bufio"
@@ -24,7 +24,7 @@ import (
 
 var accessTokenMap sync.Map
 
-func getAccessToken(json string) (string, error) {
+func getAccessToken(proxy string, json string) (string, error) {
 	data, ok := accessTokenMap.Load(json)
 	if ok {
 		token := data.(oauth2.Token)
@@ -33,15 +33,27 @@ func getAccessToken(json string) (string, error) {
 			return token.AccessToken, nil
 		}
 	}
-	creds, err := google.CredentialsFromJSON(context.Background(), []byte(json), "https://www.googleapis.com/auth/cloud-platform")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	httpClient, err := common.GetProxiedHttpClient(proxy)
 	if err != nil {
 		return "", err
 	}
+
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
+	creds, err := google.CredentialsFromJSON(ctx, []byte(json), "https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		return "", err
+	}
+
 	token, err := creds.TokenSource.Token()
 	if err != nil {
 		return "", err
 	}
 	accessTokenMap.Store(json, *token)
+
 	return token.AccessToken, nil
 }
 
@@ -52,19 +64,19 @@ func getRedirectModel(requestModel string) (string, error) {
 	return "", errors.Errorf("model %s not found", requestModel)
 }
 
-func requestOpenAI2VertexClaude(request dto.GeneralOpenAIRequest) (*VertexClaudeRequest, error) {
-	vertexClaudeRequest := &VertexClaudeRequest{
+func requestOpenAI2GcpClaude(request dto.GeneralOpenAIRequest) (*GcpClaudeRequest, error) {
+	gcpClaudeRequest := &GcpClaudeRequest{
 		AnthropicVersion: "vertex-2023-10-16",
 	}
 	claudeRequest, _ := claude.RequestOpenAI2ClaudeMessage(request)
-	err := copier.Copy(vertexClaudeRequest, claudeRequest)
+	err := copier.Copy(gcpClaudeRequest, claudeRequest)
 	if err != nil {
 		return nil, err
 	}
-	return vertexClaudeRequest, nil
+	return gcpClaudeRequest, nil
 }
 
-func vertexClaudeHandler(c *gin.Context, resp *http.Response) (*dto.OpenAIErrorWithStatusCode, *dto.Usage) {
+func gcpClaudeHandler(c *gin.Context, resp *http.Response) (*dto.OpenAIErrorWithStatusCode, *dto.Usage) {
 	var claudeResponse claude.ClaudeResponse
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -89,7 +101,7 @@ func vertexClaudeHandler(c *gin.Context, resp *http.Response) (*dto.OpenAIErrorW
 	return nil, &usage
 }
 
-func vertexClaudeStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*relaymodel.OpenAIErrorWithStatusCode, *relaymodel.Usage) {
+func gcpClaudeStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*relaymodel.OpenAIErrorWithStatusCode, *relaymodel.Usage) {
 	scanner := bufio.NewScanner(resp.Body)
 	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		if atEOF && len(data) == 0 {

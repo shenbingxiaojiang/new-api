@@ -29,7 +29,6 @@ func UpdateQuotaData() {
 	}()
 	for {
 		if common.DataExportEnabled {
-			common.SysLog("正在更新数据看板数据...")
 			SaveQuotaDataCache()
 		}
 		time.Sleep(time.Duration(common.DataExportInterval) * time.Minute)
@@ -73,6 +72,10 @@ func SaveQuotaDataCache() {
 	CacheQuotaDataLock.Lock()
 	defer CacheQuotaDataLock.Unlock()
 	size := len(CacheQuotaData)
+	if size == 0 {
+		return
+	}
+	common.SysLog("正在更新数据看板数据...")
 	// 如果缓存中有数据，就保存到数据库中
 	// 1. 先查询数据库中是否有数据
 	// 2. 如果有数据，就更新数据

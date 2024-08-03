@@ -10,6 +10,7 @@ import (
 	"one-api/common"
 	"one-api/constant"
 	"one-api/dto"
+	"one-api/model"
 	relayconstant "one-api/relay/constant"
 	"strconv"
 	"strings"
@@ -160,6 +161,11 @@ func DoMidjourneyHttpRequest(c *gin.Context, timeout time.Duration, fullRequestU
 	// read request body to json, delete accountFilter and notifyHook
 	var mapResult map[string]interface{}
 	// if get request, no need to read request body
+	channelId := c.GetInt("channel_id")
+	channel, err := model.CacheGetChannel(channelId)
+	if err != nil {
+		return MidjourneyErrorWithStatusCodeWrapper(constant.MjErrorUnknown, "channel_not_existed", http.StatusInternalServerError), nullBytes, err
+	}
 	if c.Request.Method != "GET" {
 		err := json.NewDecoder(c.Request.Body).Decode(&mapResult)
 		if err != nil {
@@ -202,7 +208,8 @@ func DoMidjourneyHttpRequest(c *gin.Context, timeout time.Duration, fullRequestU
 		req.Header.Set("mj-api-secret", auth)
 	}
 	defer cancel()
-	resp, err := GetHttpClient().Do(req)
+	httpClient, err := common.GetProxiedHttpClient(*channel.Proxy)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		common.SysError("do request failed: " + err.Error())
 		return MidjourneyErrorWithStatusCodeWrapper(constant.MjErrorUnknown, "do_request_failed", http.StatusInternalServerError), nullBytes, err

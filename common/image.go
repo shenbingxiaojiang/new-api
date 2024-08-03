@@ -1,4 +1,4 @@
-package service
+package common
 
 import (
 	"bytes"
@@ -8,7 +8,6 @@ import (
 	"golang.org/x/image/webp"
 	"image"
 	"io"
-	"one-api/common"
 	"strings"
 )
 
@@ -32,7 +31,11 @@ func DecodeBase64ImageData(base64String string) (image.Config, string, string, e
 }
 
 func IsImageUrl(url string) (bool, error) {
-	resp, err := GetImageHttpClient().Head(url)
+	httpClient, err := GetImageHttpClient()
+	if err != nil {
+		return false, err
+	}
+	resp, err := httpClient.Head(url)
 	if err != nil {
 		return false, err
 	}
@@ -44,11 +47,15 @@ func IsImageUrl(url string) (bool, error) {
 
 // GetImageFromUrl 获取图片的类型和base64编码的数据
 func GetImageFromUrl(url string) (mimeType string, data string, err error) {
+	httpClient, err := GetImageHttpClient()
+	if err != nil {
+		return
+	}
 	isImage, err := IsImageUrl(url)
 	if !isImage {
 		return
 	}
-	resp, err := GetImageHttpClient().Get(url)
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return
 	}
@@ -67,9 +74,12 @@ func GetImageFromUrl(url string) (mimeType string, data string, err error) {
 }
 
 func DecodeUrlImageData(imageUrl string) (image.Config, string, error) {
-	response, err := GetImageHttpClient().Get(imageUrl)
+	httpClient, err := GetImageHttpClient()
 	if err != nil {
-		common.SysLog(fmt.Sprintf("fail to get image from url: %s", err.Error()))
+		return image.Config{}, "", err
+	}
+	response, err := httpClient.Get(imageUrl)
+	if err != nil {
 		return image.Config{}, "", err
 	}
 	defer response.Body.Close()
@@ -81,7 +91,7 @@ func DecodeUrlImageData(imageUrl string) (image.Config, string, error) {
 
 	var readData []byte
 	for _, limit := range []int64{1024 * 8, 1024 * 24, 1024 * 64} {
-		common.SysLog(fmt.Sprintf("try to decode image config with limit: %d", limit))
+		SysLog(fmt.Sprintf("try to decode image config with limit: %d", limit))
 
 		// 从response.Body读取更多的数据直到达到当前的限制
 		additionalData := make([]byte, limit-int64(len(readData)))
@@ -107,11 +117,11 @@ func getImageConfig(reader io.Reader) (image.Config, string, error) {
 	config, format, err := image.DecodeConfig(reader)
 	if err != nil {
 		err = errors.New(fmt.Sprintf("fail to decode image config(gif, jpg, png): %s", err.Error()))
-		common.SysLog(err.Error())
+		SysLog(err.Error())
 		config, err = webp.DecodeConfig(reader)
 		if err != nil {
 			err = errors.New(fmt.Sprintf("fail to decode image config(webp): %s", err.Error()))
-			common.SysLog(err.Error())
+			SysLog(err.Error())
 		}
 		format = "webp"
 	}

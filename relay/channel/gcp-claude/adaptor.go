@@ -1,4 +1,4 @@
-package vertex_claude
+package gcp_claude
 
 import (
 	"errors"
@@ -43,7 +43,7 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Request, info *re
 		return fmt.Errorf("invalid api key: %s", info.ApiKey)
 	}
 	json := strings.TrimSpace(parts[1])
-	accessToken, err := getAccessToken(json)
+	accessToken, err := getAccessToken(info.Proxy, json)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func (a *Adaptor) ConvertRequest(c *gin.Context, info *relaycommon.RelayInfo, re
 	if request == nil {
 		return nil, errors.New("request is nil")
 	}
-	return requestOpenAI2VertexClaude(*request)
+	return requestOpenAI2GcpClaude(*request)
 }
 
 func (a *Adaptor) ConvertAudioRequest(c *gin.Context, info *relaycommon.RelayInfo, request dto.AudioRequest) (io.Reader, error) {
@@ -76,9 +76,9 @@ func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, request
 
 func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage *dto.Usage, err *dto.OpenAIErrorWithStatusCode) {
 	if info.IsStream {
-		err, usage = vertexClaudeStreamHandler(c, resp, info)
+		err, usage = gcpClaudeStreamHandler(c, resp, info)
 	} else {
-		err, usage = vertexClaudeHandler(c, resp)
+		err, usage = gcpClaudeHandler(c, resp)
 	}
 	return
 }
