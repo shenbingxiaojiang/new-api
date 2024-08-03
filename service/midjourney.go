@@ -209,6 +209,10 @@ func DoMidjourneyHttpRequest(c *gin.Context, timeout time.Duration, fullRequestU
 	}
 	defer cancel()
 	httpClient, err := common.GetProxiedHttpClient(*channel.Proxy)
+	if err != nil {
+		common.SysError("get http client failed: " + err.Error())
+		return MidjourneyErrorWithStatusCodeWrapper(constant.MjErrorUnknown, "get_http_client_failed", http.StatusInternalServerError), nullBytes, err
+	}
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		common.SysError("do request failed: " + err.Error())
