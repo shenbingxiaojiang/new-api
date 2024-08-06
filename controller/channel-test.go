@@ -245,7 +245,7 @@ func testAllChannels(notify bool) error {
 			}
 
 			// parse *int to bool
-			if channel.AutoBan != nil && *channel.AutoBan == 0 {
+			if !channel.GetAutoBan() {
 				ban = false
 			}
 

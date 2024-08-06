@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   API,
   copy,
+  getTodayStartTimestamp,
   isAdmin,
   showError,
   showSuccess,
@@ -427,12 +428,12 @@ const LogsTable = () => {
   const [logType, setLogType] = useState(0);
   const isAdminUser = isAdmin();
   let now = new Date();
-  // 初始化start_timestamp为前一天
+  // 初始化start_timestamp为今天0点
   const [inputs, setInputs] = useState({
     username: '',
     token_name: '',
     model_name: '',
-    start_timestamp: timestamp2string(now.getTime() / 1000 - 86400),
+    start_timestamp: timestamp2string(getTodayStartTimestamp()),
     end_timestamp: timestamp2string(now.getTime() / 1000 + 3600),
     channel: '',
   });
@@ -457,9 +458,9 @@ const LogsTable = () => {
   const getLogSelfStat = async () => {
     let localStartTimestamp = Date.parse(start_timestamp) / 1000;
     let localEndTimestamp = Date.parse(end_timestamp) / 1000;
-    let res = await API.get(
-      `/api/log/self/stat?type=${logType}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}`,
-    );
+    let url = `/api/log/self/stat?type=${logType}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}`;
+    url = encodeURI(url);
+    let res = await API.get(url);
     const { success, message, data } = res.data;
     if (success) {
       setStat(data);
@@ -471,9 +472,9 @@ const LogsTable = () => {
   const getLogStat = async () => {
     let localStartTimestamp = Date.parse(start_timestamp) / 1000;
     let localEndTimestamp = Date.parse(end_timestamp) / 1000;
-    let res = await API.get(
-      `/api/log/stat?type=${logType}&username=${username}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}&channel=${channel}`,
-    );
+    let url = `/api/log/stat?type=${logType}&username=${username}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}&channel=${channel}`;
+    url = encodeURI(url);
+    let res = await API.get(url);
     const { success, message, data } = res.data;
     if (success) {
       setStat(data);
@@ -483,6 +484,9 @@ const LogsTable = () => {
   };
 
   const handleEyeClick = async () => {
+    if (loadingStat) {
+      return;
+    }
     setLoadingStat(true);
     if (isAdminUser) {
       await getLogStat();
@@ -539,6 +543,7 @@ const LogsTable = () => {
     } else {
       url = `/api/log/self/?p=${startIdx}&page_size=${pageSize}&type=${logType}&token_name=${token_name}&model_name=${model_name}&start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}`;
     }
+    url = encodeURI(url);
     const res = await API.get(url);
     const { success, message, total, data } = res.data;
     if (success) {
@@ -582,6 +587,7 @@ const LogsTable = () => {
   const refresh = async () => {
     // setLoading(true);
     setActivePage(1);
+    handleEyeClick();
     await loadLogs(0, pageSize, logType);
   };
 
@@ -604,6 +610,7 @@ const LogsTable = () => {
       .catch((reason) => {
         showError(reason);
       });
+    handleEyeClick();
   }, []);
 
   // const searchLogs = async () => {
@@ -630,19 +637,17 @@ const LogsTable = () => {
       <Layout>
         <Header>
           <Spin spinning={loadingStat}>
-            <h3>
-              使用明细（总消耗额度：
-              <span
-                onClick={handleEyeClick}
-                style={{
-                  cursor: 'pointer',
-                  color: 'gray',
-                }}
-              >
-                {showStat ? renderQuota(stat.quota) : '点击查看'}
-              </span>
-              ）
-            </h3>
+            <Space>
+              <Tag color='green' size='large' style={{ padding: 15 }}>
+                总消耗额度: {renderQuota(stat.quota)}
+              </Tag>
+              <Tag color='blue' size='large' style={{ padding: 15 }}>
+                RPM: {stat.rpm}
+              </Tag>
+              <Tag color='purple' size='large' style={{ padding: 15 }}>
+                TPM: {stat.tpm}
+              </Tag>
+            </Space>
           </Spin>
         </Header>
         <Form layout='horizontal' style={{ marginTop: 10 }}>
@@ -708,20 +713,18 @@ const LogsTable = () => {
                 />
               </>
             )}
-            <Form.Section>
-              <Button
-                label='查询'
-                type='primary'
-                htmlType='submit'
-                className='btn-margin-right'
-                onClick={() => {
-                  refresh(logType).then();
-                }}
-                loading={loading}
-              >
-                查询
-              </Button>
-            </Form.Section>
+            <Button
+              label='查询'
+              type='primary'
+              htmlType='submit'
+              className='btn-margin-right'
+              onClick={refresh}
+              loading={loading}
+              style={{ marginTop: 24 }}
+            >
+              查询
+            </Button>
+            <Form.Section></Form.Section>
           </>
         </Form>
         <Table
