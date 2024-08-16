@@ -544,7 +544,7 @@ const LogsTable = () => {
     if (success) {
       setActivePage(startIdx)
       setPageSize(pageSize)
-      setLogCount(data.total);
+      setLogCount(total);
       setLogsFormat(data);
     } else {
       showError(message);

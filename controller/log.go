@@ -36,12 +36,8 @@ func GetAllLogs(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
-		"data": map[string]any{
-			"items":     logs,
-			"total":     total,
-			"page":      p,
-			"page_size": pageSize,
-		},
+		"data":    logs,
+		"total":   total,
 	})
 }
 
