@@ -24,6 +24,7 @@ const (
 var defaultModelRatio = map[string]float64{
 	//"midjourney":                50,
 	"gpt-4-gizmo-*":                  15,
+	"gpt-4o-gizmo-*":                 2.5,
 	"g-*":                            15,
 	"gpt-4":                          15,
 	"gpt-4-0314":                     15,
@@ -188,8 +189,8 @@ var defaultModelPrice = map[string]float64{
 }
 
 var (
-	modelPriceMap      = make(map[string]float64)
-	modelPriceMapMutex = sync.RWMutex{}
+	modelPriceMap      map[string]float64 = nil
+	modelPriceMapMutex                    = sync.RWMutex{}
 )
 var (
 	modelRatioMap      map[string]float64 = nil
@@ -198,10 +199,11 @@ var (
 
 var CompletionRatio map[string]float64 = nil
 var defaultCompletionRatio = map[string]float64{
-	"gpt-4-gizmo-*": 2,
-	"g-*":           2,
-	"gpt-4-all":     2,
-	"gpt-4o-all":    2,
+	"gpt-4-gizmo-*":  2,
+	"gpt-4o-gizmo-*": 3,
+	"g-*":            2,
+	"gpt-4-all":      2,
+	"gpt-4o-all":     2,
 }
 
 func GetModelPriceMap() map[string]float64 {
@@ -236,6 +238,8 @@ func GetModelPrice(name string, printErr bool) (float64, bool) {
 		name = "gpt-4-gizmo-*"
 	} else if strings.HasPrefix(name, "g-") {
 		name = "g-*"
+	} else if strings.HasPrefix(name, "gpt-4o-gizmo") {
+		name = "gpt-4o-gizmo-*"
 	}
 	price, ok := modelPriceMap[name]
 	if !ok {
@@ -320,6 +324,8 @@ func GetCompletionRatio(name string) float64 {
 		name = "gpt-4-gizmo-*"
 	} else if strings.HasPrefix(name, "g-") {
 		name = "g-*"
+	} else if strings.HasPrefix(name, "gpt-4o-gizmo") {
+		name = "gpt-4o-gizmo-*"
 	}
 	if strings.HasPrefix(name, "gpt-3.5") {
 		if strings.HasSuffix(name, "0125") {

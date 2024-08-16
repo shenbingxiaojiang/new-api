@@ -295,6 +295,8 @@ func CacheGetRandomSatisfiedChannel(group string, model string, retry int) (*Cha
 		model = "gpt-4-gizmo-*"
 	} else if strings.HasPrefix(model, "g-") {
 		model = "g-*"
+	} else if strings.HasPrefix(model, "gpt-4o-gizmo") {
+		model = "gpt-4o-gizmo-*"
 	}
 
 	// if memory cache is disabled, get channel directly from database
