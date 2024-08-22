@@ -142,7 +142,7 @@ func shouldRetry(c *gin.Context, openaiErr *dto.OpenAIErrorWithStatusCode, retry
 	}
 	if openaiErr.StatusCode == http.StatusBadRequest {
 		channelType := c.GetInt("channel_type")
-		if channelType == common.ChannelTypeAnthropic {
+		if channelType == common.AnthropicChannel.Type {
 			return true
 		}
 		return false
