@@ -24,6 +24,7 @@ type RelayInfo struct {
 	RelayMode            int
 	RequestModelName     string
 	UpstreamModelName    string
+	OriginModelName      string
 	RequestURLPath       string
 	ApiVersion           string
 	PromptTokens         int
@@ -60,6 +61,8 @@ func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 		TokenUnlimited:    tokenUnlimited,
 		StartTime:         startTime,
 		FirstResponseTime: startTime.Add(-time.Second),
+		OriginModelName:   c.GetString("original_model"),
+		UpstreamModelName: c.GetString("original_model"),
 		ApiType:           apiType,
 		ApiVersion:        c.GetString("api_version"),
 		ApiKey:            strings.TrimPrefix(c.Request.Header.Get("Authorization"), "Bearer "),
@@ -75,6 +78,9 @@ func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 	}
 	if info.ChannelType == common.AzureChannel.Type {
 		info.ApiVersion = GetAPIVersion(c)
+	}
+	if info.ChannelType == common.ChannelTypeVertexAi {
+		info.ApiVersion = c.GetString("region")
 	}
 	if info.ChannelType == common.OpenAIChannel.Type || info.ChannelType == common.AnthropicChannel.Type ||
 		info.ChannelType == common.AwsChannel.Type || info.ChannelType == common.GeminiChannel.Type ||

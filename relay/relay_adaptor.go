@@ -21,6 +21,7 @@ import (
 	"one-api/relay/channel/siliconflow"
 	"one-api/relay/channel/task/suno"
 	"one-api/relay/channel/tencent"
+	"one-api/relay/channel/vertex"
 	"one-api/relay/channel/xunfei"
 	"one-api/relay/channel/zhipu"
 	"one-api/relay/channel/zhipu_4v"
@@ -67,6 +68,8 @@ func GetAdaptor(apiType int) channel.Adaptor {
 		return &cloudflare.Adaptor{}
 	case constant.APITypeSiliconFlow:
 		return &siliconflow.Adaptor{}
+	case constant.APITypeVertexAi:
+		return &vertex.Adaptor{}
 	case constant.APITypeScholarAI:
 		return &scholarai.Adaptor{}
 	case constant.APITypeGcpClaude:

@@ -24,6 +24,7 @@ const (
 	APITypeJina
 	APITypeCloudflare
 	APITypeSiliconFlow
+	APITypeVertexAi
 
 	APITypeScholarAI
 	APITypeGcpClaude
@@ -71,6 +72,8 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = APITypeCloudflare
 	case common.SiliconFlowChannel.Type:
 		apiType = APITypeSiliconFlow
+	case common.ChannelTypeVertexAi:
+		apiType = APITypeVertexAi
 	case common.ScholarAIChannel.Type:
 		apiType = APITypeScholarAI
 	case common.GcpClaudeChannel.Type:
