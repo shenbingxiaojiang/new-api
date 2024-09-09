@@ -124,14 +124,14 @@ export const CHANNEL_OPTIONS = [
     color: 'blue',
     label: '豆包'
   },
-  {
-    key: 10003,
-    text: 'GCP Claude',
-    value: 10003,
-    backgroundColor: 'rgb(203, 155, 122)',
-    textColor: 'black',
-    label: 'GCP Claude'
-  },
+  // {
+  //   key: 10003,
+  //   text: 'GCP Claude',
+  //   value: 10003,
+  //   backgroundColor: 'rgb(203, 155, 122)',
+  //   textColor: 'black',
+  //   label: 'GCP Claude'
+  // },
   { key: 8, text: '自定义渠道', value: 8, color: 'pink', label: '自定义渠道' },
   {
     key: 22,

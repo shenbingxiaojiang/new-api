@@ -72,12 +72,12 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = APITypeCloudflare
 	case common.SiliconFlowChannel.Type:
 		apiType = APITypeSiliconFlow
-	case common.ChannelTypeVertexAi:
+	case common.VertexAiChannel.Type:
 		apiType = APITypeVertexAi
 	case common.ScholarAIChannel.Type:
 		apiType = APITypeScholarAI
-	case common.GcpClaudeChannel.Type:
-		apiType = APITypeGcpClaude
+		//case common.GcpClaudeChannel.Type:
+		//	apiType = APITypeGcpClaude
 	}
 	if apiType == -1 {
 		return APITypeOpenAI, false

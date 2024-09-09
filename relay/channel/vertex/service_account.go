@@ -8,8 +8,8 @@ import (
 	"errors"
 	"github.com/bytedance/gopkg/cache/asynccache"
 	"github.com/golang-jwt/jwt"
-	"net/http"
 	"net/url"
+	common2 "one-api/common"
 	relaycommon "one-api/relay/common"
 	"strings"
 
@@ -45,7 +45,7 @@ func getAccessToken(a *Adaptor, info *relaycommon.RelayInfo) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to create signed JWT: %w", err)
 	}
-	newToken, err := exchangeJwtForAccessToken(signedJWT)
+	newToken, err := exchangeJwtForAccessToken(signedJWT, info.Proxy)
 	if err != nil {
 		return "", fmt.Errorf("failed to exchange JWT for access token: %w", err)
 	}
@@ -96,14 +96,15 @@ func createSignedJWT(email, privateKeyPEM string) (string, error) {
 	return signedToken, nil
 }
 
-func exchangeJwtForAccessToken(signedJWT string) (string, error) {
+func exchangeJwtForAccessToken(signedJWT, proxy string) (string, error) {
 
 	authURL := "https://www.googleapis.com/oauth2/v4/token"
 	data := url.Values{}
 	data.Set("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer")
 	data.Set("assertion", signedJWT)
 
-	resp, err := http.PostForm(authURL, data)
+	httpClient, _ := common2.GetProxiedHttpClient(proxy)
+	resp, err := httpClient.PostForm(authURL, data)
 	if err != nil {
 		return "", err
 	}

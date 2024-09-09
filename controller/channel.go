@@ -200,7 +200,7 @@ func AddChannel(c *gin.Context) {
 	}
 	channel.CreatedTime = common.GetTimestamp()
 	keys := strings.Split(channel.Key, "\n")
-	if channel.Type == common.ChannelTypeVertexAi {
+	if channel.Type == common.VertexAiChannel.Type {
 		if channel.Other == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
@@ -321,7 +321,7 @@ func UpdateChannel(c *gin.Context) {
 		})
 		return
 	}
-	if channel.Type == common.ChannelTypeVertexAi {
+	if channel.Type == common.VertexAiChannel.Type {
 		if channel.Other == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
