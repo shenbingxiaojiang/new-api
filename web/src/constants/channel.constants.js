@@ -109,29 +109,6 @@ export const CHANNEL_OPTIONS = [
   { key: 37, text: 'Dify', value: 37, color: 'teal', label: 'Dify' },
   { key: 38, text: 'Jina', value: 38, color: 'blue', label: 'Jina' },
   { key: 40, text: 'SiliconCloud', value: 40, color: 'purple', label: 'SiliconCloud' },
-  {
-    key: 10001,
-    text: 'ScholarAI',
-    value: 10001,
-    backgroundColor: 'rgb(0, 70, 77)',
-    textColor: 'white',
-    label: 'ScholarAI'
-  },
-  {
-    key: 10002,
-    text: '豆包',
-    value: 10002,
-    color: 'blue',
-    label: '豆包'
-  },
-  // {
-  //   key: 10003,
-  //   text: 'GCP Claude',
-  //   value: 10003,
-  //   backgroundColor: 'rgb(203, 155, 122)',
-  //   textColor: 'black',
-  //   label: 'GCP Claude'
-  // },
   { key: 8, text: '自定义渠道', value: 8, color: 'pink', label: '自定义渠道' },
   {
     key: 22,

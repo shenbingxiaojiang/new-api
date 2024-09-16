@@ -22,7 +22,6 @@ type RelayInfo struct {
 	ApiType              int
 	IsStream             bool
 	RelayMode            int
-	RequestModelName     string
 	UpstreamModelName    string
 	OriginModelName      string
 	RequestURLPath       string
@@ -86,8 +85,7 @@ func GenRelayInfo(c *gin.Context) (*RelayInfo, error) {
 		info.ChannelType == common.AnthropicChannel.Type ||
 		info.ChannelType == common.AwsChannel.Type ||
 		info.ChannelType == common.GeminiChannel.Type ||
-		info.ChannelType == common.CloudflareChannel.Type ||
-		info.ChannelType == common.ScholarAIChannel.Type {
+		info.ChannelType == common.CloudflareChannel.Type {
 		info.SupportStreamOptions = true
 	}
 	return info, nil

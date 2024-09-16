@@ -12,7 +12,6 @@ import (
 	"one-api/dto"
 	"one-api/relay/channel"
 	"one-api/relay/channel/ai360"
-	"one-api/relay/channel/doubao"
 	"one-api/relay/channel/lingyiwanwu"
 	"one-api/relay/channel/minimax"
 	"one-api/relay/channel/moonshot"
@@ -47,8 +46,8 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 		return relaycommon.GetFullRequestURL(info.BaseUrl, requestURL, info.ChannelType), nil
 	case common.MiniMaxChannel.Type:
 		return minimax.GetRequestURL(info)
-	case common.DoubaoChannel.Type:
-		return doubao.GetRequestURL(info)
+	//case common.DoubaoChannel.Type:
+	//	return doubao.GetRequestURL(info)
 	case common.CustomChannel.Type:
 		url := info.BaseUrl
 		url = strings.Replace(url, "{model}", info.UpstreamModelName, -1)
@@ -176,8 +175,8 @@ func (a *Adaptor) GetModelList() []string {
 		return lingyiwanwu.ModelList
 	case common.MiniMaxChannel.Type:
 		return minimax.ModelList
-	case common.DoubaoChannel.Type:
-		return doubao.ModelList
+	//case common.DoubaoChannel.Type:
+	//	return doubao.ModelList
 	default:
 		return ModelList
 	}
@@ -193,8 +192,8 @@ func (a *Adaptor) GetChannelName() string {
 		return lingyiwanwu.ChannelName
 	case common.MiniMaxChannel.Type:
 		return minimax.ChannelName
-	case common.DoubaoChannel.Type:
-		return doubao.ChannelName
+	//case common.DoubaoChannel.Type:
+	//	return doubao.ChannelName
 	default:
 		return ChannelName
 	}

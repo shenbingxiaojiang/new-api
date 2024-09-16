@@ -10,14 +10,12 @@ import (
 	"one-api/relay/channel/cloudflare"
 	"one-api/relay/channel/cohere"
 	"one-api/relay/channel/dify"
-	gcp_claude "one-api/relay/channel/gcp-claude"
 	"one-api/relay/channel/gemini"
 	"one-api/relay/channel/jina"
 	"one-api/relay/channel/ollama"
 	"one-api/relay/channel/openai"
 	"one-api/relay/channel/palm"
 	"one-api/relay/channel/perplexity"
-	"one-api/relay/channel/scholarai"
 	"one-api/relay/channel/siliconflow"
 	"one-api/relay/channel/task/suno"
 	"one-api/relay/channel/tencent"
@@ -70,10 +68,6 @@ func GetAdaptor(apiType int) channel.Adaptor {
 		return &siliconflow.Adaptor{}
 	case constant.APITypeVertexAi:
 		return &vertex.Adaptor{}
-	case constant.APITypeScholarAI:
-		return &scholarai.Adaptor{}
-	case constant.APITypeGcpClaude:
-		return &gcp_claude.Adaptor{}
 	}
 	return nil
 }

@@ -46,10 +46,6 @@ var (
 	CloudflareChannel     = Channel{Type: 39, BaseUrl: "https://api.cloudflare.com"}
 	SiliconFlowChannel    = Channel{Type: 40, BaseUrl: "https://api.siliconflow.cn"}
 	VertexAiChannel       = Channel{Type: 41, BaseUrl: ""}
-
-	ScholarAIChannel = Channel{Type: 10001, BaseUrl: "https://api.scholarai.io"}
-	DoubaoChannel    = Channel{Type: 10002, BaseUrl: "https://ark.cn-beijing.volces.com"}
-	//GcpClaudeChannel = Channel{Type: 10003, BaseUrl: ""}
 )
 
 var ChannelList = []Channel{
@@ -91,10 +87,6 @@ var ChannelList = []Channel{
 	CloudflareChannel,
 	SiliconFlowChannel,
 	VertexAiChannel,
-
-	ScholarAIChannel,
-	DoubaoChannel,
-	//GcpClaudeChannel,
 }
 
 var ChannelMap map[int]Channel

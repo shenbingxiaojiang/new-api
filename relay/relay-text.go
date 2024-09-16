@@ -78,7 +78,7 @@ func TextHelper(c *gin.Context) *dto.OpenAIErrorWithStatusCode {
 		return service.OpenAIErrorWrapperLocal(err, "invalid_text_request", http.StatusBadRequest)
 	}
 
-	relayInfo.RequestModelName = textRequest.Model
+	relayInfo.OriginModelName = textRequest.Model
 	relayInfo.UpstreamModelName = textRequest.Model
 	// map model name
 	modelMapping := c.GetString("model_mapping")
