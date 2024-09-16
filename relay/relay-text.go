@@ -89,9 +89,10 @@ func TextHelper(c *gin.Context) *dto.OpenAIErrorWithStatusCode {
 		if err != nil {
 			return service.OpenAIErrorWrapperLocal(err, "unmarshal_model_mapping_failed", http.StatusInternalServerError)
 		}
-		if modelMap[textRequest.Model] != "" {
-			textRequest.Model = modelMap[textRequest.Model]
-			relayInfo.UpstreamModelName = modelMap[textRequest.Model]
+		upstreamModel := modelMap[textRequest.Model]
+		if upstreamModel != "" {
+			textRequest.Model = upstreamModel
+			relayInfo.UpstreamModelName = upstreamModel
 			// set upstream model name
 			//isModelMapped = true
 		}
